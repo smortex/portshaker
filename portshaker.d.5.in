@@ -1,0 +1,101 @@
+.\" $Id$
+.Dd September 30, 2008
+.Dt PORTSHAKER.D 5
+.Os
+.Sh NAME
+.Nm portshaker.d/
+.Nd format of
+.Xr portshaker 8
+sources update scripts
+.Sh SYNOPSIS
+.Nm
+.Sh DESCRIPTION
+The
+.Nm
+directory contains shell scripts used to maintain
+.Xr portshaker 8
+.Ar target
+ports trees.  Each script correspond to a
+.Ar source
+ports tree, and provide the required functions required by
+.Xr portshaker 8
+to merge to
+.Ar target
+ports trees.
+.Ss Syntax
+In order to ease development,
+.Xr portshaker 8
+provides the
+.Ar portshaker.subr
+scripts that contains all the logic for managing
+.Ar source
+ports trees. In order to configure a
+.Ar source
+ports tree, you have to source that file, specify how the
+ports tree has to be fetched (see bellow), and run the
+.Ar run_portshaker_command()
+function as detailed in the EXAMPLES section.
+.Pp
+The following variable are available to configure how the
+.Ar source
+ports tree has to be fetched:
+.Bl -tag
+.It Ar method
+.Pq Vt str
+Update method. Should be one of
+.Va cvs ,
+.Va portsnap
+or
+.Va svn .
+.It Ar svn_checkout_path
+.Pq Vt str
+URI to checkout the ports tree when
+.Dq Ar method Ns Li = Ns Vt svn .
+.It Ar cvs_root
+.Pq Vt str
+CVSROOT string to use for checking-out the ports tree when
+.Dq Ar method Ns Li = Ns Va cvs .
+.It Ar cvs_module
+.Pq Vt str
+cvs module to checkout when
+.Dq Ar method Ns Li = Ns Va cvs .
+.El
+.Ss Hooking
+An update script may define the
+.Ao Ar port_tree Ac Ns Ar _pre Ns Ao Ar action Ac Ns ()
+and
+.Ao Ar port_tree Ac Ns Ar _post Ns Ao Ar action Ac Ns ()
+function hooks, where
+.Va action
+is one of
+.Vt update , Vt clone_to , Vt copy_to Li or Vt merge_to .
+.Sh EXAMPLES
+To configure the official FreeBSD ports tree as a
+.Ar source
+ports tree, create a
+.Ar @@DESTDIR@@/etc/portshaker.d/freebsd
+shell script containing:
+.Bd -literal
+#!/bin/sh
+\&. @@DESTDIR@@/share/portshaker/portshaker.subr
+method="portsnap"
+run_portshaker_command $*
+.Ed
+.Pp
+To configure the BSD# ports tree as a
+.Ar source
+ports tree, create a
+.Ar @@DESTDIR@@/etc/portshaker.d/bsdsharp
+shell script containing:
+.Bd -literal
+#!/bin/sh
+\&. @@DESTDIR@@/share/portshaker/portshaker.subr
+method="svn"
+svn_checkout_path="http://bsd-sharp.googlecode.com/svn/trunk/"
+run_portshaker_command $*
+.Ed
+.Sh SEE ALSO
+.Xr portshaker 8 ,
+.Xr portshaker.conf 5
+.Sh AUTHORS
+.An Romain Tartière Aq romain@blogreen.org

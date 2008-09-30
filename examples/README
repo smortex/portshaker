@@ -1,0 +1,3 @@
+This directory contains the portshaker configuration for merging BSD# ports
+with the development version of GNOME in the default location of the FreeBSD
+ports tree.

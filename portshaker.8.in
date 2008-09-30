@@ -1,0 +1,178 @@
+.\" $Id$
+.Dd September 30, 2008
+.Dt PORTSHAKER 8
+.Os
+.Sh NAME
+.Nm portshaker
+.Nd Maintain a set of ports trees.
+.Sh SYNOPSIS
+.Nm
+.Op Fl stv
+.Op Fl U | Fl u Ar source
+.Op Fl M | Fl m Ar target
+.Sh DESCRIPTION
+The
+.Nm
+utility maintains a set of
+.Ar target
+ports trees containing ports provided by
+.Ar source
+ports trees.
+.Pp
+A single
+.Ar target
+ports tree can contain ports from any number of
+.Ar source
+ports trees. If a port is provided by more than one
+.Ar source
+ports tree,
+.Nm
+will merge the latest version of this port in the
+.Ar target
+ports tree.
+.Pp
+As
+.Nm
+can maintain any number of
+.Ar target
+ports tree, it is particularly handy if you want to maintain ports trees in a tinderbox.
+.Pp
+The options are as follows:
+.Bl -tag -width indent
+.It Fl M
+Merge all
+.Ar target
+ports trees.
+.It Fl U
+Update all
+.Ar source
+ports trees.
+.It Fl m Ar target
+Merge the specified
+.Ar target
+ports tree.
+.It Fl s
+Display the list of configured
+.Ar source
+ports trees and exit.
+.It Fl t
+Display the list of configured
+.Ar target
+ports trees and exit.
+.It Fl u Ar source
+Update the specified
+.Ar source
+ports tree.
+.It Fl v
+Be more verbose and display information messages. Specify twice to display debug messages as well.
+.El
+.Ss Handling conflics
+When merging a
+.Ar target
+ports tree,
+.Nm portshaker
+will try to detect inconsistencies and report
+.Tn conflicts .
+.Pp
+Such conflics can occur in two situations:
+.Pp
+.Bl -bullet
+.It
+Two
+.Ar source
+ports tree claim to provide the same version of a single port (they both have the same
+.Ar PORTEPOCH ,
+.Ar PORTVERSION
+and
+.Ar PORTREVISION ) 
+but they do not provide the same files.
+.Pp
+In such a situation,
+.Xr portshaker 8
+will switch to interactive mode and ask you what to do.
+.Pp
+In order to efectively fix the problem after the merge, you will have to either:
+.Bl -bullet -compact
+.It
+Remove the conflicting version of the port from its
+.Ar source
+ports tree.
+.It
+Bump the
+.Ar PORTREVISION
+of the port from the desired
+.Ar source
+ports tree.
+.El
+.It
+A port to be merged has a version number going backward.
+.Nm
+will not merge the port and will emit a warning.
+.El
+.Sh IMPLEMENTATION NOTES
+.Ss Options order
+.Nm
+will update specified
+.Ar source
+ports tree and then merge specified
+.Ar target
+ports trees regardless of the order of the
+.Fl U , u , M
+and
+.Fl m
+options order.
+.Ss Special behaviour
+When executed without any argument,
+.Nm
+will update all
+.Ar source
+ports trees and then merge all
+.Ar target
+ports tree, behaving like when
+.Fl UM
+options are provided.
+.Sh ENVIRONMENT
+The following environment variables affect the execution of
+.Nm :
+.Bl -tag -width portshaker_debug
+.It portshaker_debug
+If set to
+.Dq YES
+.Nm
+will output debugging information. This is equivalent to using the
+.Fl v
+flag.
+.It portshaker_info
+If set to
+.Dq YES
+.Nm
+will output extra information. This is equivalent to using the
+.Fl v
+flag twice.
+.El
+.Sh FILES
+.Bl -tag -width @@DESTDIR@@/etc/portshaker.conf -compact
+.It Pa @@DESTDIR@@/etc/portshaker.conf
+Default location of the configuration file containing descriptive information about
+.Nm
+.Ar target
+ports trees.
+.It Pa @@DESTDIR@@/etc/portshaker.d/*
+Default location of
+.Nm
+.Ar source
+ports tree update scripts.
+.El
+.Sh SEE ALSO
+.Xr portshaker.conf 5 ,
+.Xr portshaker.d 5
+.Sh HISTORY
+.Nm
+was originally designed to tinderbuild the development version of both mono-2.0 and gnome-2.24 together. Each project used its own merge script
+.Ao Xr mono-merge.sh 8 and Xr marcusmerge 8 Ac
+but using both at the same time leaded to conflicts.
+.Pp
+.Nm
+has so been developed as a general purpose solution to contributed ports tree maintenance.
+.Sh AUTHORS
+.An Romain Tartière Aq romain@blogreen.org

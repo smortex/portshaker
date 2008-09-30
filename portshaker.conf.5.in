@@ -1,0 +1,84 @@
+.\" $Id$
+.Dd September 30, 2008
+.Dt PORTSHAKER.CONF 5
+.Os
+.Sh NAME
+.Nm portshaker.conf
+.Nd format of the
+.Xr portshaker 8
+configuration file
+.Sh DESCRIPTION
+The file
+.Nm
+contains descriptive information about which
+.Ar source
+ports trees
+.Xr portshaker 8
+has to be merged into which
+.Ar target
+ports trees.
+.Pp
+Options are set with
+.Dq Ar name Ns Li = Ns Ar value
+assignments that use
+.Xr sh 1
+syntax.
+The following list provides a name and short description for each
+variable that can be set in the
+.Nm
+file:
+.Bl -tag
+.It Va mirror_base_dir
+.Pq Vt str
+Base directory where
+.Xr portshaker 8
+will fetch
+.Ar source
+ports trees.
+.It Va contributed_repositories
+.Pq Vt str
+Set to the list of
+.Ar target
+ports trees to maintain.
+.Pp
+A
+.Ao Ar port_tree Ac Ns Va _ports_tree
+variable must be set to tell
+.Xr portshaker 8
+where the ports trees has to be merged and a
+.Ao Ar port_tree Ac Ns Va _merge_from
+variable must be set to the list of
+.Ar source
+ports trees to merge from.
+.Pp
+.Ed
+.El
+.Sh EXAMPLES
+To maintain a single ports tree with BSD# ports:
+.Bd -literal
+contributed_repositories="main"
+main_ports_tree="/usr/ports"
+main_merge_from="freebsd bsdsharp"
+.Ed
+.Pp
+To configure a tinderbox with official ports tree (tb_official), a second one with BSD# ports tree (tb_bsdsharp), a third one with GNOME-devel ports tree (tb_gnome) and a last one with both upcomming BSD# and GNOME (tb_bsdsharp_gnome):
+.Bd -literal
+contributed_repositories="tb_official tb_bsdsharp tb_gnome tb_bsdsharp_gnome"
+
+tb="@@DESTDIR@@/tinderbox/"
+tb_official_ports_tree="${tb}/portstrees/FreeBSD/ports"
+tb_official_merge_from="freebsd"
+
+tb_bsdsharp_ports_tree="${tb}/portstrees/BSD-sharp/ports"
+tb_bsdsharp_merge_from="freebsd bsdsharp"
+
+tb_gnome_ports_tree="${tb}/portstrees/GNOME/ports"
+tb_gnome_merge_from="freebsd gnomedevel"
+
+tb_bsdsharp_gnome_ports_tree="${tb}/portstrees/BSD-sharp-gnome/ports"
+tb_bsdsharp_gnome_merge_from="freebsd bsdsharp gnomedevel"
+.Sh SEE ALSO
+.Xr portshaker 8 ,
+.Xr portshaker.d 5
+.Sh AUTHORS
+.An Romain Tartière Aq romain@blogreen.org

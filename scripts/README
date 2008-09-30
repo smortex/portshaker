@@ -1,0 +1,12 @@
+This directory contain handy scripts to work with portshaker(8).
+
+postPortBuild:
+	Post port build hook for tinderbox.  On successful packaging of a port,
+	the script will look in all other builds and see if the version of the
+	port they provide is the same as the one that was just compiled.  If
+	so, the package is copied to the other build and its status is updated
+	accordingly, avoiding an unnecessary compilation of the port in the
+	other build.
+
+	To install:
+	./tc updateHookCmd -h postPortBuild -c /path/to/postPortBuild

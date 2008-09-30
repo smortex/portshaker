@@ -1,0 +1,154 @@
+#!/bin/sh
+# $Id$
+# Name       : postPortBuild
+# Description:
+# Hook to run after building a port.
+# The following environment will be passed to the hook command:
+#         PACKAGE_NAME : Package name of the port
+#         BUILD : Build name for this port
+#         JAIL : Jail name for this Build
+#         PORTSTREE : PortsTree name for this Build
+#         CHROOT : Location of the Build root
+#         PORTDIR : Directory origin of this port
+#         PB : Tinderbox root
+#         STATUS : Status of the port build
+#         FAIL_REASON : Reason why the port build failed (if any)
+
+# Verify environment
+for _var in PACKAGE_NAME BUILD JAIL PORTSTREE CHROOT PORTDIR PB STATUS; do
+	if [ -z "$(eval echo \$$(echo ${_var}))" ]; then
+		echo "Your environment look strange: \$${_var} is not defined!" 1>&2
+		echo "Is this script really run from a tinderbox hook?" >&2
+		exit 1
+	fi
+done
+
+(
+# env
+# set -x
+
+ALL_DEPENDS=""
+
+err()
+{
+	echo "postPortBuild: $@" >&2
+	exit 1
+}
+
+get_dependencies()
+{
+	#for DEPENDENCY in $(cd ${PB}/scripts && ./tc getDependenciesForPort -b ${build} -d ${PORTDIR}); do
+	if [ -z "${ALL_DEPENDS}" ]; then
+		ALL_DEPENDS=`cd ${PB}/portstrees/${PORTSTREE}/ports/${PORTDIR} && LOCALBASE="${PB}/${BUILD}/usr/local" PACKAGE_BUILDING="yes" make all-depends-list | sed 's|/usr/ports/||' `
+	fi
+}
+
+same_origin()
+{
+	_port=$1 _pt1=$2 _pt2=$3
+	printf '     same_origin("%s", "%s", "%s"): ' ${_port} ${_pt1} ${_pt2}
+	# This port has been merged in this ports-tree. If the port that heve just been build does
+	# not came from the same ports tree, it is contagious.
+	if [ -f "${PB}/portstrees/${_pt1}/ports/.portshaker-merged-ports" ]; then
+		port_merged_from=`grep ":${_port}\$" "${PB}/portstrees/${_pt1}/ports/.portshaker-merged-ports" | tail -n 1 | cut -d: -f1`
+	else
+		port_merged_from=""
+	fi
+
+	if [ -f "${PB}/portstrees/${_pt2}/ports/.portshaker-merged-ports" ]; then
+		other_merged_from=`grep ":${_port}\$" "${PB}/portstrees/${_pt2}/ports/.portshaker-merged-ports" | tail -n 1 | cut -d: -f1`
+	else
+		other_merged_from=""
+	fi
+
+	if [ "${port_merged_from}" = "${other_merged_from}" ]; then
+		printf "0 (yes)\n"
+		return 0
+	else
+		printf "1 (no)\n"
+		return 1
+	fi
+}
+
+contagious_when_in()
+{
+	build="$1"
+
+	portstree="${build##${build%%-*}-}"
+
+	if ! same_origin ${PORTDIR} ${portstree} ${PORTSTREE}; then
+		return 0
+	fi
+	get_dependencies
+	for DEPENDENCY in ${ALL_DEPENDS}; do
+		if ! same_origin ${DEPENDENCY} ${portstree} ${PORTSTREE}; then
+			return 0
+		fi
+		if ! passed_in_build ${DEPENDENCY} ${build}; then
+			return 0
+		fi
+	done
+
+	return 1
+}
+
+passed_in_build()
+{
+	DEPENDENCY=$1
+	build=$2
+
+	printf '     passed_in_build("%s", "%s"): ' ${DEPENDENCY} ${build}
+	if [ "$(./tc getPortLastBuiltStatus -d ${DEPENDENCY} -b ${build})" != "SUCCESS" ]; then
+		printf "1 (FAILED)\n"
+		return 1
+	else
+		printf "0 (SUCCESS)\n"
+		return 0
+	fi
+}
+
+list_other_builds()
+{
+	(
+		cd ${PB}/scripts || err "other_builds: cannot cd to \${PB}/scripts (${PB}/scripts)"
+		./tc listBuilds | grep -v "^${BUILD}$" || err "other_builds: cannot get build list."
+	)
+}
+
+copy_to_other_builds()
+{
+	cd ${PB}/scripts
+	for build in $(list_other_builds); do
+		printf "===> Try to gain time copying package for ${PORTDIR} from ${BUILD} to ${build}\n"
+		# Does the port exist in that portstree?
+		if [ ! -d "${PB}/portstrees/${build##${build%%-*}-}/ports/${PORTDIR}" ]; then
+			continue
+		fi
+
+		# Add port to build if it is not already in it
+		if ! ./tc getPortsForBuild -b ${build} | grep -q "^${PORTDIR}$"; then
+			./tc addPort -b ${build} -d ${PORTDIR}
+		fi
+
+		# Check that we can copy that package in the build.
+		printf -- "---> Checking whether ${PORTDIR} is contagious in ${build}...\n"
+		if contagious_when_in ${build}; then
+			printf "${PORTDIR} is contagious in ${build}. Skipping...\n"
+			continue
+		fi
+		printf "[DONE]\n"
+
+		# Okay, everything looks right, let's copy this package to that build!
+		printf -- "---> Copying ${PORTDIR} package for ${build}...\n"
+		if [ ! -d "${PB}/packages/${build}/All" ]; then
+			mkdir -p "${PB}/packages/${build}/All" || err "copy_to_other_builds: unable to mkdir '${PB}/packages/${build}/All'"
+		fi
+		cp -p "${PB}/packages/${BUILD}/All/${PACKAGE_NAME}.tbz" "${PB}/packages/${build}/All" || err "copy_to_other_builds: unable to copy ${PACKAGE_NAME} from ${BUILD} to ${build}"
+		./tc updatePortStatus -d ${PORTDIR} -b ${build} -L -S -s "SUCCESS" -r '__nofail__' -v "${PACKAGE_NAME}" || err "copy_to_other_builds: unable to update ${PORTDIR} status in ${build}"
+	done
+}
+
+if [ "${STATUS}" = "SUCCESS" ]; then
+  copy_to_other_builds
+fi
+) > /tmp/tinderbox-hook-postPortBuild-${BUILD}-$(echo ${PORTDIR} | tr "/" "_") 2>&1

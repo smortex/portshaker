@@ -1,0 +1,12 @@
+#!/bin/sh
+# $Id$
+
+. /usr/local/share/portshaker/portshaker.subr
+
+method="cvs"
+cvs_root=":pserver:anonymous:anoncvs@creme-brulee.marcuscom.com:/space/cvs/marcuscom-cvs"
+cvs_module="ports-stable"
+
+CVS_FLAGS="-z3"
+
+run_portshaker_command $*

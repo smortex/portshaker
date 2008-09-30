@@ -1,0 +1,7 @@
+portshaker(8) is designed to maintain a set of FreeBSD ports trees.
+
+Portions of sources of this tools code have been stolen from the following
+files from a FreeBSD 7.0-STABLE box:
+  - /etc/rc.subr
+  - /usr/share/man/man5/rc.conf.5.gz
+

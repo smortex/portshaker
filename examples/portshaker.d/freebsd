@@ -1,0 +1,8 @@
+#!/bin/sh
+# $Id$
+
+. /usr/local/share/portshaker/portshaker.subr
+
+method="portsnap"
+
+run_portshaker_command $*
