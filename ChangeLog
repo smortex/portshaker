@@ -1,3 +1,9 @@
+2008-10-05  Romain Tartière  <romain@blogreen.org>
+	* Makefile: Bumped VERSION.
+	* portshaker.sh: Remove from repository.
+	* portshaker.subr.in: Fixed bug with ports without PORTVERSION (e.g.
+	mail/gmime2-sharp). Removed obsolete ports listed in RMPORTS.
+
 2008-09-30  Romain Tartière  <romain@blogreen.org>
 
 	* Initial code.
