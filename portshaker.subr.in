@@ -184,7 +184,7 @@ newer_portversion()
 	new_version=$(cd $1 && read_makefile_value PORTVERSION).
 	old_version=$(cd $2 && read_makefile_value PORTVERSION).
 
-	if [ ${old_version} = 0 -a ${new_version} = 0 ]; then
+	if [ ${old_version} = "0." -a ${new_version} = "0." ]; then
 		return 0 # Always update
 	fi
 	[ ${old_version} = ${new_version} ] && return 1
@@ -524,6 +524,16 @@ run_portshaker_command()
 				done
 				cd ..
 			done
+
+			# Remove obsolete ports
+			if [ -f "${_portsdir}/RMPORTS" ]; then
+				for _port in $(cut -d'|' -f1 "${_portsdir}/RMPORTS"); do
+					if [ -d "${_target}/${_port}" ]; then
+						info "Removing obsolete port ${_port}."
+						${RM} ${RM_RECURSIVE_FLAG} ${RM_FORCE_FLAG} "${_target}/${_port}" || err 1 "Cannot remove obsolete port ${_port}."
+					fi
+				done
+			fi
 			;;
 		update)
 			info "Updating '${name}' source ports tree with method '${method}'."
