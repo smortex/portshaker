@@ -1,4 +1,15 @@
+2008-10-09  Romain Tartière  <romain@blogreen.org>
+
+	* Makefile: Add tarball target.  Bumped VERSION.
+	* portshaker.conf.5.in: Document modification in portshaker.sh.in.
+	Fix ambiguous ports tree reference.
+	* portshaker.sh.in: Auto-install conflicting ports when merging using
+	portshaker(8) when an exclamation mark was appended to source ports
+	tree in portshaker.conf.
+	* portshaker.subr.in: More consistent messages.
+
 2008-10-05  Romain Tartière  <romain@blogreen.org>
+
 	* Makefile: Bumped VERSION.
 	* portshaker.sh: Remove from repository.
 	* portshaker.subr.in: Fixed bug with ports without PORTVERSION (e.g.

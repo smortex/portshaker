@@ -344,6 +344,7 @@ run_portshaker_command()
 				err 1 "Target directory does not exist."
 			fi
 
+			info "Merging '${_portsdir}' to '${_target}'."
 
 			# Merge Mk/*.mk files
 			if [ -d "${_portsdir}/Mk" ]; then
@@ -471,7 +472,7 @@ run_portshaker_command()
 						# Handle touched files
 						if [ -n "${_touched_files}" ]; then
 							if  [ "${_auto_install}" -eq 1 ]; then
-								echo "${_category}/${_port}:${_touched_files} changed. Copying port since -a is provided."
+								warn "${_category}/${_port}:${_touched_files} changed (copying port anyway)."
 								_copy_port=1
 							else
 								_r=""

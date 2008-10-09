@@ -42,16 +42,25 @@ Set to the list of
 ports trees to maintain.
 .Pp
 A
-.Ao Ar port_tree Ac Ns Va _ports_tree
+.Ao Ar target Ac Ns Va _ports_tree
 variable must be set to tell
 .Xr portshaker 8
 where the ports trees has to be merged and a
-.Ao Ar port_tree Ac Ns Va _merge_from
+.Ao Ar target Ac Ns Va _merge_from
 variable must be set to the list of
 .Ar source
 ports trees to merge from.
 .Pp
-.Ed
+If a
+.Ar source
+ports tree is known to provide ports that are already provided in another ports
+tree, and while both ports provide the same version of a software package they
+do not contain the same files,
+.Xr portshaker 8
+can be told to automatically install the updated ports without prompting the
+user by appending an exclamation mark after the
+.Ar source
+ports tree name.
 .El
 .Sh EXAMPLES
 To maintain a single ports tree with BSD# ports:

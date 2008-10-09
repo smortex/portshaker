@@ -8,7 +8,7 @@ MANDIR?=	/man/man
 .endif
 
 SCRIPTS=	portshaker.sh
-VERSION=	0.0.2
+VERSION=	0.0.3
 
 MAN5=		portshaker.conf.5 portshaker.d.5
 MAN8=		portshaker.8
@@ -17,7 +17,10 @@ FILES=		portshaker.conf.sample portshaker.subr
 FILESDIR_portshaker.conf.sample=	${ETCDIR}
 FILESDIR_portshaker.subr=		${SHAREDIR}/portshaker
 
-CLEANFILES+=	portshaker.conf.5 portshaker.d.5 portshaker.8 portshaker.sh portshaker.subr
+DISTDIR=	portshaker-${VERSION}
+TARBALL=	${DISTDIR}.tar.gz
+
+CLEANFILES+=	portshaker.conf.5 portshaker.d.5 portshaker.8 portshaker.sh portshaker.subr ${TARBALL}
 
 .SUFFIXES:	.5.in .5 .8.in .8 .sh.in .sh .subr.in .subr
 
@@ -31,5 +34,10 @@ CLEANFILES+=	portshaker.conf.5 portshaker.d.5 portshaker.8 portshaker.sh portsha
 beforeinstall:
 	if [ ! -d "${DESTDIR}${SHAREDIR}/portshaker" ]; then mkdir -p "${DESTDIR}${SHAREDIR}/portshaker"; fi
 	if [ ! -d "${DESTDIR}${ETCDIR}/portshaker.d" ]; then mkdir -p "${DESTDIR}${ETCDIR}/portshaker.d"; fi
+
+tarball:
+	svn export . ${DISTDIR}
+	tar zcf ${TARBALL} ${DISTDIR}
+	rm -r ${DISTDIR}
 
 .include <bsd.prog.mk>
