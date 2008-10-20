@@ -3,11 +3,24 @@
 
 . @@SHAREDIR@@/portshaker/portshaker.subr
 
+# usage
+#	Display command line arguments for portshaker.
+#
 usage()
 {
 	echo "usage: $0 [-stv] [ -U | -u ports_tree ] [ -M | -m ports_tree ]" 1>&2
 	exit 1
 }
+
+# source_ports_trees
+#	Get a list of all available source ports trees.
+#
+source_ports_trees()
+{
+	(cd ${config_dir}/portshaker.d && ls -I)
+}
+
+# Entry point
 
 args=`getopt Mm:stUu:v $*`
 if [ $? -ne 0 ]; then
@@ -21,7 +34,7 @@ set -- $args
 for i; do
 	case "$i" in
 		-s)
-			echo $(cd ${config_dir}/portshaker.d && ls)
+			echo $(source_ports_trees)
 			exit 0
 			;;
 		-t)
@@ -33,7 +46,7 @@ for i; do
 			shift
 			;;
 		-U)	_do_update=1
-			_update_ports_trees="$(cd ${config_dir}/portshaker.d && ls)"
+			_update_ports_trees="$(source_ports_trees)"
 			shift
 			;;
 		-u)	_do_update=1
@@ -61,7 +74,7 @@ fi
 if [ -z "${_update_ports_trees}${_merge_ports_trees}" ]; then
 	# Assume -UM when no option is provided
 	_do_update=1
-	_update_ports_trees="$(cd ${config_dir}/portshaker.d && ls)"
+	_update_ports_trees="$(source_ports_trees)"
 	_do_merge=1
 	_merge_ports_trees="${ports_trees}"
 fi
@@ -75,9 +88,6 @@ fi
 
 if [ "${_do_update}" -eq 1 ]; then
 	for _ports_tree in ${_update_ports_trees}; do
-		if [ ! -x "${config_dir}/portshaker.d/${_ports_tree}" ]; then
-			err 1 "'${config_dir}/portshaker.d/${_ports_tree}' is not executable."
-		fi
 		${config_dir}/portshaker.d/${_ports_tree} update
 		if [ $? -ne 0 ]; then
 			err 1 "Failed to update the '${_ports_tree}' ports tree."
@@ -96,9 +106,6 @@ if [ "${_do_merge}" -eq 1 ]; then
 				# Auto-install modified ports.
 				_source=${_source%?}
 				_merge_flags="-a"
-			fi
-			if [ ! -x "${config_dir}/portshaker.d/${_source}" ]; then
-				err 1 "'${config_dir}/portshaker.d/${_source}' is not executable."
 			fi
 			if [ "${_first}" -eq 1 ]; then
 				${config_dir}/portshaker.d/${_source} clone_to -t ${_target} || exit 1

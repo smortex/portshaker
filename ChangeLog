@@ -1,3 +1,30 @@
+2008-10-20  Romain Tartière <romain@blogreen.org>
+
+	* Makefile: Bumped VERSION.
+	* examples/portshaker.conf: Force merge for marcuscom ports.
+	* portshaker.d.5.in, portshaker.conf.5.in: Sync examples and man pages
+	for the name of the bsd_sharp source ports tree.
+
+		Reported by: Baptiste Grenier <baptiste@bapt.name>
+
+	* portshaker.sh.in: Do not check that a source ports tree
+	configuration file is executable anymore (to be consistent, it would
+	be necessary to also test if it is a regular file, if it is readable
+	and even if it exists at all.  Let's keep it simple, and let sh(1)
+	tell what the problem is)!  Do not update hidden source ports trees,
+	thoses with an hidden configuration file, when using -U.
+
+		Reported by José María <josemaria@simpleoption.com>,
+		After thinking too much about how far we have to check the
+		environment.
+
+2008-10-18  Romain Tartière  <romain@blogreen.org>
+
+	* portshaker.sh.in: Refactoring of the code for source ports tree
+	listing.  Document the usage() function.
+	* portshaker.subr.in: Replace a "for ... in `ls`" by a more elegant
+	"for ... in *"
+
 2008-10-09  Romain Tartière  <romain@blogreen.org>
 
 	* Makefile: Add tarball target.  Bumped VERSION.

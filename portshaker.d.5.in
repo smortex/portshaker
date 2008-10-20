@@ -85,7 +85,7 @@ run_portshaker_command $*
 To configure the BSD# ports tree as a
 .Ar source
 ports tree, create a
-.Ar @@DESTDIR@@/etc/portshaker.d/bsdsharp
+.Ar @@DESTDIR@@/etc/portshaker.d/bsd_sharp
 shell script containing:
 .Bd -literal
 #!/bin/sh

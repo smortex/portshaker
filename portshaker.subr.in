@@ -349,7 +349,7 @@ run_portshaker_command()
 			# Merge Mk/*.mk files
 			if [ -d "${_portsdir}/Mk" ]; then
 				cd "${_portsdir}/Mk" || exit 1
-				for _mk in `ls`; do
+				for _mk in *; do
 					if [ ${_mk} = "CVS" -o ${_mk} = ".svn" ]; then
 						continue
 					fi
