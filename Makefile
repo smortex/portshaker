@@ -1,14 +1,7 @@
 # $Id$
 
-BINDIR?=	/bin
-ETCDIR?=	/etc
-.if defined(DESTDIR)
-SHAREDIR?=	/share
-MANDIR?=	/man/man
-.endif
-
 SCRIPTS=	portshaker.sh
-VERSION=	0.0.4
+VERSION=	0.0.5
 
 MAN5=		portshaker.conf.5 portshaker.d.5
 MAN8=		portshaker.8
@@ -40,4 +33,5 @@ tarball:
 	tar zcf ${TARBALL} ${DISTDIR}
 	rm -r ${DISTDIR}
 
+.include "Makefile.inc"
 .include <bsd.prog.mk>

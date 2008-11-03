@@ -8,7 +8,7 @@
 #
 usage()
 {
-	echo "usage: $0 [-stv] [ -U | -u ports_tree ] [ -M | -m ports_tree ]" 1>&2
+	echo "usage: $0 [-stv] [ -U | -u source ] [ -M | -m target ]" 1>&2
 	exit 1
 }
 
@@ -86,20 +86,38 @@ if [ ${_debug_level} -gt 0 ]; then
 	fi
 fi
 
+# Update
 if [ "${_do_update}" -eq 1 ]; then
 	for _ports_tree in ${_update_ports_trees}; do
+		if type ${_ports_tree}_preupdate 1>/dev/null 2>&1; then
+			info "executing pre-command '${_ports_tree}_preupdate()'."
+			${_ports_tree}_preupdate || exit 1
+		fi
+
 		${config_dir}/portshaker.d/${_ports_tree} update
 		if [ $? -ne 0 ]; then
 			err 1 "Failed to update the '${_ports_tree}' ports tree."
 		fi
+
+		if type ${_ports_tree}_postupdate 1>/dev/null 2>&1; then
+			info "Executing post-command '${_ports_tree}_postupdate()'."
+			${_ports_tree}_postupdate || exit 1
+		fi
 	done
 fi
 
+# Merge
 if [ "${_do_merge}" -eq 1 ]; then
 	for _ports_tree in ${_merge_ports_trees}; do
 		_target=`eval echo \\\$${_ports_tree}_ports_tree`
 		_merge_from=`eval echo \\\$${_ports_tree}_merge_from`
 		_first=1
+
+		if type ${_ports_tree}_premerge 1>/dev/null 2>&1; then
+			info "executing pre-command '${_ports_tree}_premerge()'."
+			${_ports_tree}_premerge || exit 1
+		fi
+
 		for _source in ${_merge_from}; do
 			_merge_flags=""
 			if [ "${_first}" -ne 1 -a "x${_source#${_source%?}}" = 'x!' ]; then
@@ -114,6 +132,11 @@ if [ "${_do_merge}" -eq 1 ]; then
 				${config_dir}/portshaker.d/${_source} merge_to ${_merge_flags} -t ${_target} || exit 1
 			fi
 		done
+
+		if type ${_ports_tree}_portmerge 1>/dev/null 2>&1; then
+			info "Executing post-command '${_ports_tree}_postmerge()'."
+			${_ports_tree}_postmerge || exit 1
+		fi
 	done
 fi
 

@@ -34,7 +34,7 @@ MKDIR_PARENTS_FLAG="-p"
 PAGER="${PAGER:=less}"
 
 PATCH="patch"
-PATCH_FLAGS=""
+PATCH_FLAGS="-s"
 
 PORTSNAP="portsnap"
 PORTSNAP_FLAGS=""
@@ -70,7 +70,7 @@ err()
 	exitval=$1
 	shift
 
-	echo "[31;3m[Error $(date +%T)][0m $*" >&2
+	printf "\\033[31;3m[Error $(date +%T)]\\033[0m $*\\n" >&2
 	exit ${exitval}
 }
 
@@ -79,7 +79,7 @@ err()
 #
 warn()
 {
-	echo "[33;3m[Warn  $(date +%T)][0m $*" >&2
+	printf "\\033[33;3m[Warn  $(date +%T)]\\033[0m $*\\n" >&2
 }
 
 # info
@@ -89,7 +89,7 @@ info()
 {
 	case ${portshaker_info} in
 		[Yy][Ee][Ss]|[Tt][Rr][Uu][Ee]|[Oo][Nn]|1)
-			echo "[32;3m[Info  $(date +%T)][0m $*" >&2
+			printf "\\033[32;3m[Info  $(date +%T)]\\033[0m $*\\n" >&2
 	esac
 }
 
@@ -100,7 +100,7 @@ debug()
 {
 	case ${portshaker_debug} in
 		[Yy][Ee][Ss]|[Tt][Rr][Uu][Ee]|[Oo][Nn]|1)
-			echo "[34;3m[Debug $(date +%T)][0m $*" >&2
+			printf "\\033[34;3m[Debug $(date +%T)]\\033[0m $*\\n" >&2
 	esac
 }
 
@@ -349,7 +349,7 @@ run_portshaker_command()
 			# Merge Mk/*.mk files
 			if [ -d "${_portsdir}/Mk" ]; then
 				cd "${_portsdir}/Mk" || exit 1
-				for _mk in *; do
+				for _mk in `ls`; do
 					if [ ${_mk} = "CVS" -o ${_mk} = ".svn" ]; then
 						continue
 					fi
@@ -370,13 +370,13 @@ run_portshaker_command()
 
 			# Merge ports
 			cd "${_portsdir}" || exit 1
-			for _category in *; do
-				if [ ! -d ${_category} ] || [ ${_category} = "Mk" -o ${_category} = "CVS" ]; then
+			for _category in `ls`; do
+				if [ ! -d ${_category} ] || [ ${_category} = "Mk" -o ${_category} = "CVS" -o ${_category} = ".svn" ]; then
 					continue
 				fi
 				cd ${_category} || exit 1
-				for _port in *; do
-					if [ ${_port} = "CVS" ]; then
+				for _port in `ls`; do
+					if [ ${_port} = "CVS" -o ${_port} = ".svn" ]; then
 						continue
 					fi
 					_copy_port=0
@@ -522,9 +522,35 @@ run_portshaker_command()
 					else
 						debug "Not copying '${_portsdir}/${_category}/${_port}' to '${_target}/${_category}/${_port}'."
 					fi
-				done
+				done # _port
 				cd ..
-			done
+			done # _category
+
+			# Note to myself:
+			# Updating the INDEX file has to occur once merging is
+			# done because dandling dependencies will make `make
+			# depends` fail.
+			info "Updating INDEX files."
+			for _category in `ls`; do
+				if [ ! -d ${_category} ] || [ ${_category} = "Mk" -o ${_category} = "CVS" -o ${_category} = ".svn" ]; then
+					continue
+				fi
+				cd ${_category} || exit 1
+				for _port in `ls`; do
+					if [ ${_port} = "CVS" -o ${_port} = ".svn" ]; then
+						continue
+					fi
+					if grep -q "^${name}:${_category}/${_port}$" "${_target}/.portshaker-merged-ports"; then
+						_index_line=`make -C "${_target}/${_category}/${_port}" describe`
+						for _index in ${_target}/INDEX-?; do
+							awk -F'|' ' { if (!($2 ~ "/'${_category}/${_port}'$")) { print } } ' < "${_index}" > "${_index}.tmp"
+							echo ${_index_line} >> "${_index}.tmp"
+							mv -f "${_index}.tmp" "${_index}"
+						done # _index
+					fi
+				done # _port
+				cd ..
+			done # _category
 
 			# Remove obsolete ports
 			if [ -f "${_portsdir}/RMPORTS" ]; then
@@ -532,8 +558,12 @@ run_portshaker_command()
 					if [ -d "${_target}/${_port}" ]; then
 						info "Removing obsolete port ${_port}."
 						${RM} ${RM_RECURSIVE_FLAG} ${RM_FORCE_FLAG} "${_target}/${_port}" || err 1 "Cannot remove obsolete port ${_port}."
+						for _index in ${_target}/INDEX-?; do
+							awk -F'|' ' { if (!($2 ~ "/'${_port}'$")) { print } } ' < "${_index}" > "${_index}.tmp"
+							mv -f "${_index}.tmp" "${_index}"
+						done # _index
 					fi
-				done
+				done # _port
 			fi
 			;;
 		update)

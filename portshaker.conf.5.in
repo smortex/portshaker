@@ -62,6 +62,19 @@ user by appending an exclamation mark after the
 .Ar source
 ports tree name.
 .El
+.Ss Hooking
+Hooks for
+.Xr portshaker 8
+can be defined in
+.Nm
+as functions named
+.Ao Ar port_tree Ac Ns Ar _pre Ns Ao Ar action Ac Ns ()
+and
+.Ao Ar port_tree Ac Ns Ar _post Ns Ao Ar action Ac Ns ()
+where
+.Va action
+is one of
+.Vt update or Vt merge .
 .Sh EXAMPLES
 To maintain a single ports tree with BSD# ports:
 .Bd -literal

@@ -1,5 +1,13 @@
 portshaker(8) is designed to maintain a set of FreeBSD ports trees.
 
+For install instructions, please refer to the INSTALL file.  After installing,
+you will have to configure portshaker(8) since it is a toolkit and does nothing
+out of the box.  Configuration instructions are provided in the distribution
+man pages: portshaker(8), portshaker.conf(5) and portshaker.d(5).
+
+If you intend to test BSD#, a complete configuration that will work out of the
+box is available from the examples directory.
+
 Portions of sources of this tools code have been stolen from the following
 files from a FreeBSD 7.0-STABLE box:
   - /etc/rc.subr

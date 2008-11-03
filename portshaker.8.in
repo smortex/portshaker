@@ -135,18 +135,18 @@ options are provided.
 The following environment variables affect the execution of
 .Nm :
 .Bl -tag -width portshaker_debug
-.It portshaker_debug
-If set to
-.Dq YES
-.Nm
-will output debugging information. This is equivalent to using the
-.Fl v
-flag.
 .It portshaker_info
 If set to
 .Dq YES
 .Nm
 will output extra information. This is equivalent to using the
+.Fl v
+flag.
+.It portshaker_debug
+If set to
+.Dq YES
+.Nm
+will output extra debugging information. This is equivalent to using the
 .Fl v
 flag twice.
 .El

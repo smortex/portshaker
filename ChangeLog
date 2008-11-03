@@ -1,4 +1,41 @@
-2008-10-20  Romain Tartière <romain@blogreen.org>
+2008-11-03  Romain Tartière  <romain@blogreen.org>
+
+	* Makefile: Bumped VERSION.
+	* portshaker.subr.in: While "for ... in *" is far more elegant
+	than "for ... in `ls`", it will fail with empty directories.
+
+		Reported by: Baptiste Grenier <baptiste@bapt.name>
+
+2008-10-31  Romain Tartière  <romain@blogreen.org>
+
+	* portshaker.8.in: Correct information about the $portshaker_info and
+	$portshaker_debug environment variables.
+
+2008-10-28  Romain Tartière  <romain@blogreen.org>
+
+	* portshaker.subr.in: Replace color escape characters with the
+	corresponding ASCII char sequence.
+
+2008-10-23  Romain Tartière  <romain@blogreen.org>
+
+	* Makefile,
+	* Makefile.inc,
+	* examples/Makefile,
+	* examples/Makefile.inc,
+	* examples/portshaker.d/Makefile: Make the BSD# portshaker(8)
+	configuration install as simple as `make install' in the example
+	directory.  Refactor projects Makefiles hierarchy.
+	* README: Give pointers on what to do after install.
+
+		Suggested by: Baptiste Grenier <baptiste@bapt.name>
+
+	* examples/README: Reference man page in README.
+	* portshaker.sh.in: Add hooking capabilities.
+	* portshaker.conf.5.in: Document hooking capabilities for
+	portshaker(8).
+	* portshaker.subr.in: Update INDEX files when merging ports.
+
+2008-10-20  Romain Tartière  <romain@blogreen.org>
 
 	* Makefile: Bumped VERSION.
 	* examples/portshaker.conf: Force merge for marcuscom ports.
@@ -12,7 +49,7 @@
 	be necessary to also test if it is a regular file, if it is readable
 	and even if it exists at all.  Let's keep it simple, and let sh(1)
 	tell what the problem is)!  Do not update hidden source ports trees,
-	thoses with an hidden configuration file, when using -U.
+	those with an hidden configuration file, when using -U.
 
 		Reported by José María <josemaria@simpleoption.com>,
 		After thinking too much about how far we have to check the
