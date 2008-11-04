@@ -1,3 +1,12 @@
+2008-11-04  Romain Tartière  <romain@blogreen.org>
+
+	* INSTALL: `su -` will change the working directory so use just `su`
+	to gain root privileges and install portshaker(8).  I chose not to
+	rely on sudo(8) since it is not in the base system and that would have
+	been another occasion for Baptiste to complain about some details.
+
+		Reported by: Baptiste Grenier <baptiste@bapt.name>
+
 2008-11-03  Romain Tartière  <romain@blogreen.org>
 
 	* Makefile: Bumped VERSION.

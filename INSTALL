@@ -3,5 +3,5 @@ look at the DESTDIR environment variable is you want portshaker(8) to be
 installed as a contributed software package and not as part of the system.
 
 make DESTDIR="/usr/local"
-su -
+su
 make DESTDIR="/usr/local" install
