@@ -10,6 +10,7 @@
 .Op Fl stv
 .Op Fl U | Fl u Ar source
 .Op Fl M | Fl m Ar target
+.Op Fl I | Fl i Ar target
 .Sh DESCRIPTION
 The
 .Nm
@@ -39,6 +40,10 @@ ports tree, it is particularly handy if you want to maintain ports trees in a ti
 .Pp
 The options are as follows:
 .Bl -tag -width indent
+.It Fl I
+Update all
+.Ar target
+ports trees INDEX files.
 .It Fl M
 Merge all
 .Ar target
@@ -47,6 +52,10 @@ ports trees.
 Update all
 .Ar source
 ports trees.
+.It Fl i Ar target
+Update the specified
+.Ar target
+ports tree INDEX files.
 .It Fl m Ar target
 Merge the specified
 .Ar target

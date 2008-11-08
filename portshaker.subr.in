@@ -526,32 +526,6 @@ run_portshaker_command()
 				cd ..
 			done # _category
 
-			# Note to myself:
-			# Updating the INDEX file has to occur once merging is
-			# done because dandling dependencies will make `make
-			# depends` fail.
-			info "Updating INDEX files."
-			for _category in `ls`; do
-				if [ ! -d ${_category} ] || [ ${_category} = "Mk" -o ${_category} = "CVS" -o ${_category} = ".svn" ]; then
-					continue
-				fi
-				cd ${_category} || exit 1
-				for _port in `ls`; do
-					if [ ${_port} = "CVS" -o ${_port} = ".svn" ]; then
-						continue
-					fi
-					if grep -q "^${name}:${_category}/${_port}$" "${_target}/.portshaker-merged-ports"; then
-						_index_line=`make -C "${_target}/${_category}/${_port}" describe`
-						for _index in ${_target}/INDEX-?; do
-							awk -F'|' ' { if (!($2 ~ "/'${_category}/${_port}'$")) { print } } ' < "${_index}" > "${_index}.tmp"
-							echo ${_index_line} >> "${_index}.tmp"
-							mv -f "${_index}.tmp" "${_index}"
-						done # _index
-					fi
-				done # _port
-				cd ..
-			done # _category
-
 			# Remove obsolete ports
 			if [ -f "${_portsdir}/RMPORTS" ]; then
 				for _port in $(cut -d'|' -f1 "${_portsdir}/RMPORTS"); do
@@ -559,7 +533,7 @@ run_portshaker_command()
 						info "Removing obsolete port ${_port}."
 						${RM} ${RM_RECURSIVE_FLAG} ${RM_FORCE_FLAG} "${_target}/${_port}" || err 1 "Cannot remove obsolete port ${_port}."
 						for _index in ${_target}/INDEX-?; do
-							awk -F'|' ' { if (!($2 ~ "/'${_port}'$")) { print } } ' < "${_index}" > "${_index}.tmp"
+							${AWK} -F'|' ' { if (!($2 ~ "/'${_port}'$")) { print } } ' < "${_index}" > "${_index}.tmp"
 							mv -f "${_index}.tmp" "${_index}"
 						done # _index
 					fi
@@ -666,6 +640,46 @@ run_portshaker_command()
 	echo 1>&2 "$0: unknown command '${_portshaker_arg}'"
 	portshaker_usage
 	# not reached
+}
+# update_index
+# 	Update INDEX files.
+# 	$1 - Target ports tree path
+update_index()
+{
+	_target="$1"
+	info "Updating ${_target} INDEX files."
+	_merged_ports=`cut -d: -f2 "${_target}/.portshaker-merged-ports"`
+	_pending_make_describe=""
+
+	for _index in ${_target}/INDEX-?; do
+		debug "Searching for outdated ports references in ${_index}."
+		# Get deprecated pkg-name list (using origin of these ports)
+		_old_references_re=`echo "${_merged_ports}" | lam -s'/' - -s'|' | ${GREP} -f- "${_index}" | cut -d'|' -f1`
+		if [ -z "${_old_references_re}" ]; then
+			debug "No merged port was referenced in ${_index}."
+		else
+			debug "Removing deprecated information from ${_index}."
+			# List origins of deprecated ports and ports depending on them
+			# XXX package-1.2.3 will invalidate my-package-1.2.3
+			_pending_make_describe=`echo "${_old_references_re}" | ${GREP} -f- "${_index}" | cut -d'|' -f2 | sed -e 's|.*/\([^/]*/[^/]*\)|\1|' | sort | uniq`
+			# Remove deprecated ports information
+			echo "${_old_references_re}" | ${GREP} -f- -v "${_index}" > "${_index}.tmp"
+			mv "${_index}.tmp" "${_index}"
+		fi
+	done
+
+
+	debug "Appending actual information to INDEX files."
+	for _port in $(echo "${_merged_ports}\n${_pending_make_describe}" | sort | uniq); do
+		_index_line=`make -C "${_target}/${_port}" PORTSDIR="${_target}" describe`
+		if [ $? -ne 0 ]; then
+			warn "'make -C "${_target}/${_port}" describe' failed!"
+			continue
+		fi
+		for _index in ${_target}/INDEX-?; do
+			echo "${_index_line}" >> ${_index}
+		done
+	done
 }
 
 fi

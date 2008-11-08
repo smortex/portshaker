@@ -8,7 +8,7 @@
 #
 usage()
 {
-	echo "usage: $0 [-stv] [ -U | -u source ] [ -M | -m target ]" 1>&2
+	echo "usage: $0 [-stv] [ -U | -u source ] [ -M | -m target ] [ -I | -i target ]" 1>&2
 	exit 1
 }
 
@@ -22,13 +22,14 @@ source_ports_trees()
 
 # Entry point
 
-args=`getopt Mm:stUu:v $*`
+args=`getopt Ii:Mm:stUu:v $*`
 if [ $? -ne 0 ]; then
 	usage
 fi
 
 _do_update=0
 _do_merge=0
+_do_update_index=0
 _debug_level=0
 set -- $args
 for i; do
@@ -61,6 +62,14 @@ for i; do
 			_merge_ports_trees="${_merge_ports_trees} $2"; shift
 			shift
 			;;
+		-I)	_do_update_index=1
+			_update_index_ports_trees="${ports_trees}"
+			shift
+			;;
+		-i)	_do_update_index=1
+			_update_index_ports_trees="${_update_index_ports_trees} $2"; shift
+			shift
+			;;
 		--)	shift
 			break
 			;;
@@ -71,7 +80,7 @@ if [ $# -gt 0 ]; then
 	usage
 fi
 
-if [ -z "${_update_ports_trees}${_merge_ports_trees}" ]; then
+if [ -z "${_update_ports_trees}${_merge_ports_trees}${_update_index_ports_trees}" ]; then
 	# Assume -UM when no option is provided
 	_do_update=1
 	_update_ports_trees="$(source_ports_trees)"
@@ -140,4 +149,22 @@ if [ "${_do_merge}" -eq 1 ]; then
 	done
 fi
 
+# Update INDEX
+if [ "${_do_update_index}" -eq 1 ]; then
+	for _ports_tree in ${_update_index_ports_trees}; do
+		_target=`eval echo \\\$${_ports_tree}_ports_tree`
+
+		if type ${_ports_tree}_preupdateindex 1>/dev/null 2>&1; then
+			info "executing pre-command '${_ports_tree}_preupdateindex()'."
+			${_ports_tree}_preupdateindex || exit 1
+		fi
+
+		update_index ${_target}
+
+		if type ${_ports_tree}_postupdateindex 1>/dev/null 2>&1; then
+			info "executing post-command '${_ports_tree}_postupdateindex()'."
+			${_ports_tree}_postupdateindex || exit 1
+		fi
+	done
+fi
 exit 0

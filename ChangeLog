@@ -1,3 +1,13 @@
+2008-11-08  Romain Tartière  <romain@blogreen.org>
+
+	* Makefile: Bumped VERSION.
+	* README: Provide -I considerations.
+	* portshaker.8.in: Document new -I / -i switches.
+	* portshaker.sh.in: Add -I / -i switches for updating a target ports
+	tree INDEX files.
+	* portshaker.subr.in: Reworked INDEX updating so that lines referring
+	to ports depending on updated ports are also updated.
+
 2008-11-04  Romain Tartière  <romain@blogreen.org>
 
 	* INSTALL: `su -` will change the working directory so use just `su`
