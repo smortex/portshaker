@@ -13,11 +13,16 @@ usage()
 }
 
 # source_ports_trees
-#	Get a list of all available source ports trees.
+#	Get a list of all source ports trees referenced in the configuration files.
 #
 source_ports_trees()
 {
-	(cd ${config_dir}/portshaker.d && ls -I)
+	for _ports_tree in ${ports_trees}; do
+		_merge_from=`eval echo \\\$${_ports_tree}_merge_from`
+		for _from in ${_merge_from}; do
+			echo ${_from} | sed -e 's/!$//'
+		done
+	done | sort | uniq
 }
 
 # Entry point

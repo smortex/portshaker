@@ -1,5 +1,18 @@
 2008-10-20  Romain Tartière  <romain@blogreen.org>
 
+	* Makefile: Bumped VERSION.
+	* portshaker.sh.in: Only consider source ports trees referenced in the
+	configuration for operation on them (i.e. do not update unused source
+	trees).
+	* examples/portshaker.d/bsd_sharp_releng_2_0: Add a source ports tree
+	for tracking the 2.0 serie of mono while the porting effort is on 2.2.
+	* examples/portshaker.d/Makefile: Install bsd_sharp_releng_2_0 when
+	installing examples.
+	* examples/portshaker.conf: Explain how to track the branch of
+	bsd-sharp holding the 2.0 release.
+
+2008-10-20  Romain Tartière  <romain@blogreen.org>
+
 	* portshaker.subr.in: Fixed ports listing for building INDEX.
 	* scripts/postPortBuild: Ensure that ports are build with the same set
 	of options before copying packages.
