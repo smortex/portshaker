@@ -1,3 +1,9 @@
+2008-10-20  Romain Tartière  <romain@blogreen.org>
+
+	* portshaker.subr.in: Fixed ports listing for building INDEX.
+	* scripts/postPortBuild: Ensure that ports are build with the same set
+	of options before copying packages.
+
 2008-11-08  Romain Tartière  <romain@blogreen.org>
 
 	* Makefile: Bumped VERSION.

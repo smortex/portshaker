@@ -43,6 +43,25 @@ get_dependencies()
 	fi
 }
 
+# same_options
+#	Ensure a port is build with the exact set of options in two builds.
+#	$1 - Port to test (category/port).
+#	$2 - First build name.
+#	$3 - Second build name.
+same_options()
+{
+	_port=`echo $1 cut -d'/' -f2` _build1=$2 _build2=$3
+
+	options1="${PB}/options/${_build1}/${_port}/options"
+	options2="${PB}/options/${_build2}/${_port}/options"
+
+	if [ ! -f ${options1} -a ! -f ${options2} ]; then
+		return 0
+	fi
+
+	cmp "${options1}" "${options2}"
+}
+
 same_origin()
 {
 	_port=$1 _pt1=$2 _pt2=$3
@@ -76,6 +95,9 @@ contagious_when_in()
 
 	portstree="${build##${build%%-*}-}"
 
+	if ! same_options ${PORTDIR} ${build} ${BUILD}; then
+		return 0
+	fi
 	if ! same_origin ${PORTDIR} ${portstree} ${PORTSTREE}; then
 		return 0
 	fi

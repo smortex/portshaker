@@ -670,7 +670,7 @@ update_index()
 
 
 	debug "Appending actual information to INDEX files."
-	for _port in $(echo "${_merged_ports}\n${_pending_make_describe}" | sort | uniq); do
+	for _port in $(printf "%s\\n%s" "${_merged_ports}" "${_pending_make_describe}" | sort | uniq); do
 		_index_line=`make -C "${_target}/${_port}" PORTSDIR="${_target}" describe`
 		if [ $? -ne 0 ]; then
 			warn "'make -C "${_target}/${_port}" describe' failed!"
