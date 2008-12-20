@@ -1,3 +1,9 @@
+2008-10-21  Romain Tartière  <romain@blogreen.org>
+
+	* portshaker.sh.in: Ensure that the variable that should be set in the
+	configuration file are set.  Raise an error if they are not.
+	* scripts/postPortBuild: Add missing pipe.
+
 2008-10-20  Romain Tartière  <romain@blogreen.org>
 
 	* Makefile: Bumped VERSION.

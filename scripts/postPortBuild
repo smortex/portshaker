@@ -50,7 +50,7 @@ get_dependencies()
 #	$3 - Second build name.
 same_options()
 {
-	_port=`echo $1 cut -d'/' -f2` _build1=$2 _build2=$3
+	_port=`echo $1 | cut -d'/' -f2` _build1=$2 _build2=$3
 
 	options1="${PB}/options/${_build1}/${_port}/options"
 	options2="${PB}/options/${_build2}/${_port}/options"

@@ -127,6 +127,13 @@ if [ "${_do_merge}" -eq 1 ]; then
 		_merge_from=`eval echo \\\$${_ports_tree}_merge_from`
 		_first=1
 
+		if [ -z "${_target}" ]; then
+			err 1 "Don't know where to merge ${_ports_tree}."
+		fi
+		if [ -z "${_merge_from}" ]; then
+			err 1 "Don't know how to build ${_ports_tree}."
+		fi
+
 		if type ${_ports_tree}_premerge 1>/dev/null 2>&1; then
 			info "executing pre-command '${_ports_tree}_premerge()'."
 			${_ports_tree}_premerge || exit 1
@@ -158,6 +165,9 @@ fi
 if [ "${_do_update_index}" -eq 1 ]; then
 	for _ports_tree in ${_update_index_ports_trees}; do
 		_target=`eval echo \\\$${_ports_tree}_ports_tree`
+		if [ -z "${_target}" ]; then
+			err 1 "Don't know where are located ${_ports_tree}'s INDEX files."
+		fi
 
 		if type ${_ports_tree}_preupdateindex 1>/dev/null 2>&1; then
 			info "executing pre-command '${_ports_tree}_preupdateindex()'."
