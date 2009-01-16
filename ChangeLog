@@ -1,10 +1,22 @@
-2008-10-21  Romain Tartière  <romain@blogreen.org>
+2009-01-16  Romain Tartière  <romain@blogreen.org>
+
+	* Makefile: Bumped VERSION.
+	* portshaker.subr.in: Ignore the Tools directory.
+
+2008-12-26  Romain Tartière  <romain@blogreen.org>
+
+	* ChangeLog: Fix wrong dates for the 3 previous entries.
+	* examples/portshaker.d/Makefile: Install freebsd_texlive source.
+	* examples/portshaker.d/freebsd_texlive: New source to merge TeXLive.
+	* portshaker.subr.in: Change some info messages to debug.
+
+2008-12-21  Romain Tartière  <romain@blogreen.org>
 
 	* portshaker.sh.in: Ensure that the variable that should be set in the
 	configuration file are set.  Raise an error if they are not.
 	* scripts/postPortBuild: Add missing pipe.
 
-2008-10-20  Romain Tartière  <romain@blogreen.org>
+2008-12-20  Romain Tartière  <romain@blogreen.org>
 
 	* Makefile: Bumped VERSION.
 	* portshaker.sh.in: Only consider source ports trees referenced in the
@@ -17,7 +29,7 @@
 	* examples/portshaker.conf: Explain how to track the branch of
 	bsd-sharp holding the 2.0 release.
 
-2008-10-20  Romain Tartière  <romain@blogreen.org>
+2008-12-20  Romain Tartière  <romain@blogreen.org>
 
 	* portshaker.subr.in: Fixed ports listing for building INDEX.
 	* scripts/postPortBuild: Ensure that ports are build with the same set

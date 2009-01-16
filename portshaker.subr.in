@@ -371,7 +371,7 @@ run_portshaker_command()
 			# Merge ports
 			cd "${_portsdir}" || exit 1
 			for _category in `ls`; do
-				if [ ! -d ${_category} ] || [ ${_category} = "Mk" -o ${_category} = "CVS" -o ${_category} = ".svn" ]; then
+				if [ ! -d ${_category} ] || [ ${_category} = "Mk" -o ${_category} = "CVS" -o ${_category} = ".svn" -o ${_category} = "Tools" ]; then
 					continue
 				fi
 				cd ${_category} || exit 1
@@ -421,19 +421,19 @@ run_portshaker_command()
 						# Look for modifications of port files
 						for _file in `find "${_portsdir}/${_category}/${_port}" -maxdepth 1 -type f -exec basename '{}' ';'`; do
 							if [ ! -e "${_target}/${_category}/${_port}/${_file}" ]; then
-								info "${_category}/${_port}/${_file} has been created."
+								debug "${_category}/${_port}/${_file} has been created."
 								_touched_files="${_touched_files} ${_file}"
 							else
 								${CMP} "${_portsdir}/${_category}/${_port}/${_file}" "${_target}/${_category}/${_port}/${_file}" 1>/dev/null 2>&1
 								if [ $? -ne 0 ]; then
-									info "${_category}/${_port}/${_file} has been changed."
+									debug "${_category}/${_port}/${_file} has been changed."
 									_touched_files="${_touched_files} ${_file}"
 								fi
 							fi
 						done
 						for _file in `find "${_target}/${_category}/${_port}" -maxdepth 1 -type f -exec basename '{}' ';'`; do
 							if [ ! -e "${_portsdir}/${_category}/${_port}/${_file}" ]; then
-								info "${_category}/${_port}/${_file} has been removed."
+								debug "${_category}/${_port}/${_file} has been removed."
 								_touched_files="${_touched_files} ${_file}"
 							fi
 						done
@@ -443,12 +443,12 @@ run_portshaker_command()
 						if [ -d "${_portsdir}/${_category}/${_port}/files" ]; then
 							for _patch in `find "${_portsdir}/${_category}/${_port}/files" -maxdepth 1 -type f -exec basename '{}' ';'`; do
 								if [ ! -e "${_target}/${_category}/${_port}/files/${_patch}" ]; then
-									info "${_category}/${_port}/files/${_patch} has been created."
+									debug "${_category}/${_port}/files/${_patch} has been created."
 									_patches="${_patches} ${_patch}"
 								else
 									${CMP} "${_portsdir}/${_category}/${_port}/files/${_patch}" "${_target}/${_category}/${_port}/files/${_patch}" 1>/dev/null 2>&1
 									if [ $? -ne 0 ]; then
-										info "${_category}/${_port}/files/${_patch} has been changed."
+										debug "${_category}/${_port}/files/${_patch} has been changed."
 										_patches="${_patches} ${_patch}"
 									fi
 								fi
@@ -457,7 +457,7 @@ run_portshaker_command()
 						if [ -d "${_target}/${_category}/${_port}/files" ]; then
 							for _patch in `find "${_target}/${_category}/${_port}/files" -maxdepth 1 -type f -exec basename '{}' ';'`; do
 								if [ ! -e "${_portsdir}/${_category}/${_port}/files/${_patch}" ]; then
-									info "${_category}/${_port}/files/${_patch} has been removed."
+									debug "${_category}/${_port}/files/${_patch} has been removed."
 									_patches="${_patches} ${_patch}"
 								fi
 							done
