@@ -5,6 +5,8 @@ FILESDIR_portshaker.conf=	${ETCDIR}
 
 SUBDIR=		portshaker.d
 
+.include <bsd.prog.mk>
+
 beforeinstall:
 .if ! exists(${DESTDIR}${ETCDIR}/portshaker.d)
 	@echo " ,----------------------------( Error )----------------------------."
@@ -15,5 +17,3 @@ beforeinstall:
 	@echo " \`-----------------------------------------------------------------'"
 	@false
 .endif
-
-.include <bsd.prog.mk>
