@@ -532,24 +532,28 @@ run_portshaker_command()
 					head -n 5 Makefile > Makefile.new
 					find . -mindepth 1 -maxdepth 1 -type d -print | sort | sed -e 's|^./|    SUBDIR += |' >> Makefile.new
 					tail -n 2 Makefile >> Makefile.new
-					mv Makefile.new Makefile
+					mv -f Makefile.new Makefile
 					)
 				fi
 				cd ..
 			done # _category
 
 			# Remove obsolete ports
-			if [ -f "${_portsdir}/RMPORTS" ]; then
-				for _port in $(cut -d'|' -f1 "${_portsdir}/RMPORTS"); do
+			if [ -f "${_portsdir}/MOVED" ]; then
+				cat "${_portsdir}/MOVED" | while read _line; do
+					_port=`echo $_line | cut -d'|' -f1`
 					if [ -d "${_target}/${_port}" ]; then
 						info "Removing obsolete port ${_port}."
 						${RM} ${RM_RECURSIVE_FLAG} ${RM_FORCE_FLAG} "${_target}/${_port}" || err 1 "Cannot remove obsolete port ${_port}."
+						echo "${_line}" >> "${_target}/MOVED"
 						for _index in ${_target}/INDEX-?; do
 							${AWK} -F'|' ' { if (!($2 ~ "/'${_port}'$")) { print } } ' < "${_index}" > "${_index}.tmp"
 							mv -f "${_index}.tmp" "${_index}"
 						done # _index
+					else
+						warn "${_port} referenced in ${_portsdir}/MOVED does not exist. MOVED may need to be updated."
 					fi
-				done # _port
+				done # while read _line
 			fi
 			;;
 		update)

@@ -1,5 +1,11 @@
 2009-02-05  Romain Tartière <romain@blogreen.org>
 
+	* portshaker.subr.in: Drop RMPORTS support in favor of MOVED. Update
+	categories Makefiles on port deletion. Warn about merging invalid
+	MOVED entries.
+
+2009-02-05  Romain Tartière <romain@blogreen.org>
+
 	* portshaker.subr.in: Update categories Makefiles when a new port is
 	added.
 
