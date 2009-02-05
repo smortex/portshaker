@@ -371,6 +371,7 @@ run_portshaker_command()
 			# Merge ports
 			cd "${_portsdir}" || exit 1
 			for _category in `ls`; do
+				_regen_category_makefile=0
 				if [ ! -d ${_category} ] || [ ${_category} = "Mk" -o ${_category} = "CVS" -o ${_category} = ".svn" -o ${_category} = "Tools" ]; then
 					continue
 				fi
@@ -386,6 +387,7 @@ run_portshaker_command()
 					# Determine wether the port has to be merged or not
 					if [ ! -d "${_target}/${_category}/${_port}" ]; then
 						debug "${_category}/${_port} is a new port."
+						_regen_category_makefile=1
 						_copy_port=1
 					else
 						# Compare port versions
@@ -523,6 +525,16 @@ run_portshaker_command()
 						debug "Not copying '${_portsdir}/${_category}/${_port}' to '${_target}/${_category}/${_port}'."
 					fi
 				done # _port
+
+				if [ ${_regen_category_makefile} = 1 ]; then
+					(cd ${_target}/${_category}
+					debug "Updating ${_category} Makefile."
+					head -n 5 Makefile > Makefile.new
+					find . -mindepth 1 -maxdepth 1 -type d -print | sort | sed -e 's|^./|    SUBDIR += |' >> Makefile.new
+					tail -n 2 Makefile >> Makefile.new
+					mv Makefile.new Makefile
+					)
+				fi
 				cd ..
 			done # _category
 

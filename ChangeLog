@@ -1,3 +1,8 @@
+2009-02-05  Romain Tartière <romain@blogreen.org>
+
+	* portshaker.subr.in: Update categories Makefiles when a new port is
+	added.
+
 2009-01-16  Romain Tartière  <romain@blogreen.org>
 
 	* Makefile: Bumped VERSION.
