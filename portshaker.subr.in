@@ -7,8 +7,10 @@
 
 if [ -z "${_portshaker_subr_loaded}" ]; then
 
-config_dir="@@ETCDIR@@"
-. ${config_dir}/portshaker.conf
+if [ "${_portshaker_load_config}" != "no" ]; then
+	config_dir="@@ETCDIR@@"
+	. ${config_dir}/portshaker.conf
+fi
 
 _rc_subr_loaded="YES"
 
@@ -51,6 +53,8 @@ SVN="svn"
 SVN_FLAGS=""
 
 TOUCH="touch"
+
+VCS_ID_KEYWORDS="FreeBSD Id MCom"
 
 _keywords="update clone_to copy_to merge_to"
 _portshaker_arg=""
@@ -154,6 +158,52 @@ read_makefile_value()
 {
 	value=`${AWK} 'BEGIN { r = "0"} /^'$1'\??=/ { $1 = ""; r = $0; } END { print r }  ' Makefile`
 	echo $value
+}
+
+# read_file_vcs_keyword
+# 	Look for VCS $Keyword$ information string in the provided file.
+# 	$1 - Filename
+# 	$1 - Keyword
+read_file_vcs_keyword()
+{
+	${GREP} -o "\\\$$2:[^\$]*\\\$" "$1"
+}
+
+# newer_vcs_id
+# 	Compate two VCS $Id...$ string and outputs the delta as the number 1 if
+# 	the revision is going upwards or -1 if the revision is going downward,
+# 	returning 1. If the revision has not changed, 0 is both output and
+# 	returned.
+# 	$1 - File to compate
+# 	$2 - Reference File
+newer_vcs_id()
+{
+	for _keyword in ${VCS_ID_KEYWORDS}; do
+		new_rev=$(read_file_vcs_keyword "$1" ${_keyword} | cut -d' ' -f3)
+		old_rev=$(read_file_vcs_keyword "$2" ${_keyword} | cut -d' ' -f3)
+
+		if [ -z "${new_rev}" -a -z "${old_rev}" ]; then
+			continue
+		fi
+
+		_ret=`echo "${new_rev} ${old_rev}" | awk ' {
+			if ($1 > $2) {
+				print 1;
+			} else if ($1 == $2) {
+				print 0;
+			} else {
+				print -1;
+			}
+		}'`
+
+		if [ ${_ret} -ne 0 ]; then
+			echo ${_ret}
+			return 1
+		fi
+	done
+
+	echo 0
+	return 0
 }
 
 # newer_portepoch
@@ -360,6 +410,9 @@ run_portshaker_command()
 					if [ ! -e "${_target}/Mk/${_mk}" ]; then
 						err 1 "'Mk/${_mk}' missing! copy / clone repository before merging."
 					fi
+					if [ 0 -ne `newer_vcs_id "${mirror_base_dir}/freebsd/Mk/${_mk}" "${_mk}"` ]; then
+						err 1 "'Mk/${_mk}' is not in sync with the one provided in the FreeBSD ports."
+					fi
 					if ${DIFF} ${DIFF_FLAGS} "${mirror_base_dir}/freebsd/Mk/${_mk}" "${_mk}" | (cd ${_target}/Mk && ${PATCH} ${PATCH_FLAGS}); then
 						${TOUCH} "${_target}/Mk/.${_mk}-${name}-patched"
 					else
@@ -510,7 +563,7 @@ run_portshaker_command()
 						fi
 					fi
 					# Merge port
-					if [ ${_copy_port} -eq 1 -a ${_version_going_backward} = 0 ]; then
+					if [ ${_copy_port} -eq 1 -a ${_version_going_backward} -eq 0 ]; then
 						debug "Copying '${_portsdir}/${_category}/${_port}' to '${_target}/${_category}/${_port}'."
 						${P} ${RM} ${RM_RECURSIVE_FLAG} ${RM_FORCE_FLAG} "${_target}/${_category}/${_port}" || err 1 "Cannot remove outdated '${_target}/${_category}/${_port}' port directory."
 						${P} ${CP} ${CP_PRESERVE_FLAG} ${CP_RECURSIVE_FLAG} "${_portsdir}/${_category}/${_port}" "${_target}/${_category}/${_port}" || err 1 "Cannot merge ${_category}/${_port}."
@@ -526,7 +579,7 @@ run_portshaker_command()
 					fi
 				done # _port
 
-				if [ ${_regen_category_makefile} = 1 ]; then
+				if [ ${_regen_category_makefile} -eq 1 ]; then
 					(cd ${_target}/${_category}
 					debug "Updating ${_category} Makefile."
 					head -n 5 Makefile > Makefile.new
