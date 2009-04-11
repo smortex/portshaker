@@ -599,10 +599,6 @@ run_portshaker_command()
 						info "Removing obsolete port ${_port}."
 						${RM} ${RM_RECURSIVE_FLAG} ${RM_FORCE_FLAG} "${_target}/${_port}" || err 1 "Cannot remove obsolete port ${_port}."
 						echo "${_line}" >> "${_target}/MOVED"
-						for _index in ${_target}/INDEX-?; do
-							${AWK} -F'|' ' { if (!($2 ~ "/'${_port}'$")) { print } } ' < "${_index}" > "${_index}.tmp"
-							mv -f "${_index}.tmp" "${_index}"
-						done # _index
 					else
 						warn "${_port} referenced in ${_portsdir}/MOVED does not exist. MOVED may need to be updated."
 					fi
@@ -709,46 +705,6 @@ run_portshaker_command()
 	echo 1>&2 "$0: unknown command '${_portshaker_arg}'"
 	portshaker_usage
 	# not reached
-}
-# update_index
-# 	Update INDEX files.
-# 	$1 - Target ports tree path
-update_index()
-{
-	_target="$1"
-	info "Updating ${_target} INDEX files."
-	_merged_ports=`cut -d: -f2 "${_target}/.portshaker-merged-ports"`
-	_pending_make_describe=""
-
-	for _index in ${_target}/INDEX-?; do
-		debug "Searching for outdated ports references in ${_index}."
-		# Get deprecated pkg-name list (using origin of these ports)
-		_old_references_re=`echo "${_merged_ports}" | lam -s'/' - -s'|' | ${GREP} -f- "${_index}" | cut -d'|' -f1`
-		if [ -z "${_old_references_re}" ]; then
-			debug "No merged port was referenced in ${_index}."
-		else
-			debug "Removing deprecated information from ${_index}."
-			# List origins of deprecated ports and ports depending on them
-			# XXX package-1.2.3 will invalidate my-package-1.2.3
-			_pending_make_describe=`echo "${_old_references_re}" | ${GREP} -f- "${_index}" | cut -d'|' -f2 | sed -e 's|.*/\([^/]*/[^/]*\)|\1|' | sort | uniq`
-			# Remove deprecated ports information
-			echo "${_old_references_re}" | ${GREP} -f- -v "${_index}" > "${_index}.tmp"
-			mv "${_index}.tmp" "${_index}"
-		fi
-	done
-
-
-	debug "Appending actual information to INDEX files."
-	for _port in $(printf "%s\\n%s" "${_merged_ports}" "${_pending_make_describe}" | sort | uniq); do
-		_index_line=`make -C "${_target}/${_port}" PORTSDIR="${_target}" describe`
-		if [ $? -ne 0 ]; then
-			warn "'make -C "${_target}/${_port}" describe' failed!"
-			continue
-		fi
-		for _index in ${_target}/INDEX-?; do
-			echo "${_index_line}" >> ${_index}
-		done
-	done
 }
 
 fi

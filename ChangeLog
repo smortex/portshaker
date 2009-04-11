@@ -1,5 +1,11 @@
 2009-04-11  Romain Tartière  <romain@blogreen.org>
 
+	* portshaker.sh.in, portshaker.subr.in: use `make index' to build
+	INDEX files and remove the slow incremental updating code.  This speed
+	up things and is now possible since we update categories Makefiles.
+
+2009-04-11  Romain Tartière  <romain@blogreen.org>
+
 	* ChangeLog: Fix some spaces.
 	* portshaker.subr.in: Do not try to load user configuration if a
 	_portshaker_load_config variable is set to "no" so that it is possible

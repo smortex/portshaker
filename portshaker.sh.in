@@ -174,7 +174,7 @@ if [ "${_do_update_index}" -eq 1 ]; then
 			${_ports_tree}_preupdateindex || exit 1
 		fi
 
-		update_index ${_target}
+		cd ${_target} && make index
 
 		if type ${_ports_tree}_postupdateindex 1>/dev/null 2>&1; then
 			info "executing post-command '${_ports_tree}_postupdateindex()'."
