@@ -531,7 +531,7 @@ run_portshaker_command()
 								warn "${_category}/${_port}:${_touched_files} changed (copying port anyway)."
 								_copy_port=1
 							elif [ ${_pretend} -eq 1 ]; then
-								warn "${_category}/${_port}:${_touched_files} ihave been changed but PORTVERSION is the same."
+								warn "${_category}/${_port}:${_touched_files} changed but is PORTVERSION unchanged."
 							else
 								_r=""
 								while true; do
