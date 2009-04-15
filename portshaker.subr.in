@@ -7,12 +7,12 @@
 
 if [ -z "${_portshaker_subr_loaded}" ]; then
 
+_portshaker_subr_loaded="YES"
+
 if [ "${_portshaker_load_config}" != "no" ]; then
 	config_dir="@@ETCDIR@@"
 	. ${config_dir}/portshaker.conf
 fi
-
-_rc_subr_loaded="YES"
 
 AWK="awk"
 
@@ -59,7 +59,7 @@ VCS_ID_KEYWORDS="FreeBSD Id MCom"
 _keywords="update clone_to copy_to merge_to"
 _portshaker_arg=""
 
-P=""
+_pretend=0
 
 #
 #	functions
@@ -108,7 +108,6 @@ debug()
 	esac
 }
 
-#
 # portshaker_usage
 # 	Display command line arguments for portshaker scripts.
 #
@@ -371,7 +370,7 @@ run_portshaker_command()
 						_auto_install=1
 						shift ;;
 					-p)
-						P="echo"
+						_pretend=1
 						shift ;;
 					-t)
 						_target="$2"; shift
@@ -411,12 +410,14 @@ run_portshaker_command()
 						err 1 "'Mk/${_mk}' missing! copy / clone repository before merging."
 					fi
 					if [ 0 -ne `newer_vcs_id "${mirror_base_dir}/freebsd/Mk/${_mk}" "${_mk}"` ]; then
-						err 1 "'Mk/${_mk}' is not in sync with the one provided in the FreeBSD ports."
+						warn "'Mk/${_mk}' is not in sync with the one provided in the FreeBSD ports."
 					fi
-					if ${DIFF} ${DIFF_FLAGS} "${mirror_base_dir}/freebsd/Mk/${_mk}" "${_mk}" | (cd ${_target}/Mk && ${PATCH} ${PATCH_FLAGS}); then
-						${TOUCH} "${_target}/Mk/.${_mk}-${name}-patched"
-					else
-						err 1 "Unable to patch 'Mk/${_mk}'."
+					if [ ${_pretend} -eq 0 ]; then
+						if ${DIFF} ${DIFF_FLAGS} "${mirror_base_dir}/freebsd/Mk/${_mk}" "${_mk}" | (cd ${_target}/Mk && ${PATCH} ${PATCH_FLAGS}); then
+							${TOUCH} "${_target}/Mk/.${_mk}-${name}-patched"
+						else
+							err 1 "Unable to patch 'Mk/${_mk}'."
+						fi
 					fi
 				done
 			fi
@@ -529,6 +530,8 @@ run_portshaker_command()
 							if  [ "${_auto_install}" -eq 1 ]; then
 								warn "${_category}/${_port}:${_touched_files} changed (copying port anyway)."
 								_copy_port=1
+							elif [ ${_pretend} -eq 1 ]; then
+								warn "${_category}/${_port}:${_touched_files} ihave been changed but PORTVERSION is the same."
 							else
 								_r=""
 								while true; do
@@ -565,15 +568,17 @@ run_portshaker_command()
 					# Merge port
 					if [ ${_copy_port} -eq 1 -a ${_version_going_backward} -eq 0 ]; then
 						debug "Copying '${_portsdir}/${_category}/${_port}' to '${_target}/${_category}/${_port}'."
-						${P} ${RM} ${RM_RECURSIVE_FLAG} ${RM_FORCE_FLAG} "${_target}/${_category}/${_port}" || err 1 "Cannot remove outdated '${_target}/${_category}/${_port}' port directory."
-						${P} ${CP} ${CP_PRESERVE_FLAG} ${CP_RECURSIVE_FLAG} "${_portsdir}/${_category}/${_port}" "${_target}/${_category}/${_port}" || err 1 "Cannot merge ${_category}/${_port}."
-						for _special_file in CVS .svn files/CVS files/.svn; do
-							if [ -d "${_target}/${_category}/${_port}/${_special_file}" ]; then
-								${RM} ${RM_RECURSIVE_FLAG} ${RM_FORCE_FLAG} "${_target}/${_category}/${_port}/${_special_file}" || err 1 "Cannot remove '${_target}/${_category}/${_port}/${_special_file}'."
-							fi
-						done
-						# Keep a trace of merged ports (for speeding up tinderbox in hooks for example)
-						echo "${name}:${_category}/${_port}" >> "${_target}/.portshaker-merged-ports"
+						if [ ${_pretend} -eq 0 ]; then
+							${RM} ${RM_RECURSIVE_FLAG} ${RM_FORCE_FLAG} "${_target}/${_category}/${_port}" || err 1 "Cannot remove outdated '${_target}/${_category}/${_port}' port directory."
+							${CP} ${CP_PRESERVE_FLAG} ${CP_RECURSIVE_FLAG} "${_portsdir}/${_category}/${_port}" "${_target}/${_category}/${_port}" || err 1 "Cannot merge ${_category}/${_port}."
+							for _special_file in CVS .svn files/CVS files/.svn; do
+								if [ -d "${_target}/${_category}/${_port}/${_special_file}" ]; then
+									${RM} ${RM_RECURSIVE_FLAG} ${RM_FORCE_FLAG} "${_target}/${_category}/${_port}/${_special_file}" || err 1 "Cannot remove '${_target}/${_category}/${_port}/${_special_file}'."
+								fi
+							done
+							# Keep a trace of merged ports (for speeding up tinderbox in hooks for example)
+							echo "${name}:${_category}/${_port}" >> "${_target}/.portshaker-merged-ports"
+						fi
 					else
 						debug "Not copying '${_portsdir}/${_category}/${_port}' to '${_target}/${_category}/${_port}'."
 					fi
@@ -582,10 +587,12 @@ run_portshaker_command()
 				if [ ${_regen_category_makefile} -eq 1 ]; then
 					(cd ${_target}/${_category}
 					debug "Updating ${_category} Makefile."
-					head -n 5 Makefile > Makefile.new
-					find . -mindepth 1 -maxdepth 1 -type d -print | sort | sed -e 's|^./|    SUBDIR += |' >> Makefile.new
-					tail -n 2 Makefile >> Makefile.new
-					mv -f Makefile.new Makefile
+					if [ ${_pretend} -eq 0 ]; then
+						head -n 5 Makefile > Makefile.new
+						find . -mindepth 1 -maxdepth 1 -type d -print | sort | sed -e 's|^./|    SUBDIR += |' >> Makefile.new
+						tail -n 2 Makefile >> Makefile.new
+						mv -f Makefile.new Makefile
+					fi
 					)
 				fi
 				cd ..
@@ -597,10 +604,12 @@ run_portshaker_command()
 					_port=`echo $_line | cut -d'|' -f1`
 					if [ -d "${_target}/${_port}" ]; then
 						info "Removing obsolete port ${_port}."
-						${RM} ${RM_RECURSIVE_FLAG} ${RM_FORCE_FLAG} "${_target}/${_port}" || err 1 "Cannot remove obsolete port ${_port}."
-						echo "${_line}" >> "${_target}/MOVED"
+						if [ ${_pretend} -eq 0 ]; then
+							${RM} ${RM_RECURSIVE_FLAG} ${RM_FORCE_FLAG} "${_target}/${_port}" || err 1 "Cannot remove obsolete port ${_port}."
+							echo "${_line}" >> "${_target}/MOVED"
+						fi
 					else
-						warn "${_port} referenced in ${_portsdir}/MOVED does not exist. MOVED may need to be updated."
+						warn "${_port} referenced in ${_portsdir}/MOVED does not exist."
 					fi
 				done # while read _line
 			fi

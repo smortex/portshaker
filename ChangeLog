@@ -1,3 +1,9 @@
+2009-04-15  Romain Tartière  <romain@blogreen.org>
+
+	* portshaker.subr.in: Rework and Fix the pretend `-p' flag of the
+	merge_to action.  Only produce a warning when Mk files are not in
+	sync.
+
 2009-04-11  Romain Tartière  <romain@blogreen.org>
 
 	* portshaker.sh.in, portshaker.subr.in: use `make index' to build
