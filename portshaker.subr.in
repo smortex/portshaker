@@ -54,7 +54,7 @@ SVN_FLAGS=""
 
 TOUCH="touch"
 
-VCS_ID_KEYWORDS="FreeBSD Id MCom"
+VCS_ID_KEYWORDS="${VCS_ID_KEYWORDS:=FreeBSD Id MCom}"
 
 _keywords="update clone_to copy_to merge_to"
 _portshaker_arg=""
