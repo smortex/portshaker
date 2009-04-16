@@ -397,26 +397,34 @@ run_portshaker_command()
 
 			# Merge Mk/*.mk files
 			if [ -d "${_portsdir}/Mk" ]; then
+				if [ ! -d "${_target}/Mk" ]; then
+					err 1 "'${_target}/Mk' missing! copy / clone repository before merging."
+				fi
 				cd "${_portsdir}/Mk" || exit 1
 				for _mk in `ls`; do
 					if [ ${_mk} = "CVS" -o ${_mk} = ".svn" ]; then
 						continue
 					fi
-					if [ -e "${_target}/Mk/.${_mk}-${name}-patched" ]; then
-						warn "'Mk/${_mk}' has already been patched."
-						continue
-					fi
-					if [ ! -e "${_target}/Mk/${_mk}" ]; then
-						err 1 "'Mk/${_mk}' missing! copy / clone repository before merging."
-					fi
-					if [ 0 -ne `newer_vcs_id "${mirror_base_dir}/freebsd/Mk/${_mk}" "${_mk}"` ]; then
-						warn "'Mk/${_mk}' is not in sync with the one provided in the FreeBSD ports."
-					fi
-					if [ ${_pretend} -eq 0 ]; then
-						if ${DIFF} ${DIFF_FLAGS} "${mirror_base_dir}/freebsd/Mk/${_mk}" "${_mk}" | (cd ${_target}/Mk && ${PATCH} ${PATCH_FLAGS}); then
-							${TOUCH} "${_target}/Mk/.${_mk}-${name}-patched"
-						else
-							err 1 "Unable to patch 'Mk/${_mk}'."
+					if [ -e "${_target}/Mk/${_mk}" -a -e "${mirror_base_dir}/freebsd/Mk/${_mk}" ]; then
+						if [ -e "${_target}/Mk/.${_mk}-${name}-patched" ]; then
+							warn "'Mk/${_mk}' has already been patched."
+							continue
+						fi
+						if [ 0 -ne `newer_vcs_id "${mirror_base_dir}/freebsd/Mk/${_mk}" "${_mk}"` ]; then
+							warn "'Mk/${_mk}' is not in sync with the one provided in the FreeBSD ports."
+						fi
+						debug "Updating 'Mk/${_mk}'."
+						if [ ${_pretend} -eq 0 ]; then
+							if ${DIFF} ${DIFF_FLAGS} "${mirror_base_dir}/freebsd/Mk/${_mk}" "${_mk}" | (cd ${_target}/Mk && ${PATCH} ${PATCH_FLAGS}); then
+								${TOUCH} "${_target}/Mk/.${_mk}-${name}-patched"
+							else
+								err 1 "Unable to patch 'Mk/${_mk}'."
+							fi
+						fi
+					else
+						debug "Copying 'Mk/${_mk}'."
+						if [ ${_pretend} -eq 0 ]; then
+							${CP} "${_mk}" "${_target}/Mk/${_mk}" || err 1 "Unable to copy 'Mk/${_mk}'."
 						fi
 					fi
 				done

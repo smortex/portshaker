@@ -1,3 +1,7 @@
+2009-04-14  Romain Tartière  <romain@blogreen.org>
+
+	* portshaker.subr.in: Handle new Mk files.
+
 2009-04-15  Romain Tartière  <romain@blogreen.org>
 
 	* portshaker.subr.in: Rework and Fix the pretend `-p' flag of the
