@@ -1,3 +1,12 @@
+2009-05-29  Romain Tartière  <romain@blogreen.org>
+
+	* portshaker.subr.in: Fix PORTREVISION checking when a version of a
+	port has PORTREVISION set and not the other.
+
+2009-04-14  Romain Tartière  <romain@blogreen.org>
+
+	* portshaker.subr.in: Added Tinderbox support.
+
 2009-04-14  Romain Tartière  <romain@blogreen.org>
 
 	* portshaker.subr.in: Handle new Mk files.

@@ -56,6 +56,10 @@ TOUCH="touch"
 
 VCS_ID_KEYWORDS="${VCS_ID_KEYWORDS:=FreeBSD Id MCom}"
 
+# Tinderbox related
+PB="${PB:=/usr/local/tinderbox}"
+TC="${TC:=${PB}/tc}"
+
 _keywords="update clone_to copy_to merge_to"
 _portshaker_arg=""
 
@@ -130,9 +134,10 @@ portshaker_usage()
 			echo "  -t  Target directory to copy the ports tree to"
 			;;
 		merge_to)
-			echo "merge_to [-ap] -t target"
+			echo "merge_to [-ap] [-b build] -t target"
 			echo "Supported arguments:"
 			echo "  -a  Automatically copy port if files where touched but version is unchanged"
+			echo "  -b  Tinderboy build to add copied packages to"
 			echo "  -p  Show what is going to happen but do not do anything (pretend mode)"
 			echo "  -t  Target directory to merge the ports tree in"
 			;;
@@ -269,7 +274,14 @@ newer_portrevision()
 	if [ -z "${old_revision}" -a -z "${new_revision}" ]; then
 		return 1
 	fi
-	[ "${old_revision}" -lt "${new_revision}" ]
+
+	if [ "${old_revision:=0}" -lt "${new_revision:=0}" ]; then
+		return 0
+	elif [ "${old_revision:=0}" -gt "${new_revision:=0}" ]; then
+		return 2
+	else
+		return 1
+	fi
 }
 
 # run_portshaker_command
@@ -357,17 +369,21 @@ run_portshaker_command()
 			esac
 			;;
 		merge_to)
-			_args=`getopt apt: ${_portshaker_extra_args}`
+			_args=`getopt ab:pt: ${_portshaker_extra_args}`
 			if [ $? -ne 0 ]; then
 				portshaker_usage
 			fi
 			set -- ${_args}
 			_auto_install=0
 			_target=""
+			_tinderbox_builds=""
 			for _i; do
 				case "${_i}" in
 					-a)
 						_auto_install=1
+						shift ;;
+					-b)
+						_tinderbox_builds="${_tinderbox_builds} $2"; shift
 						shift ;;
 					-p)
 						_pretend=1
@@ -407,7 +423,7 @@ run_portshaker_command()
 					fi
 					if [ -e "${_target}/Mk/${_mk}" -a -e "${mirror_base_dir}/freebsd/Mk/${_mk}" ]; then
 						if [ -e "${_target}/Mk/.${_mk}-${name}-patched" ]; then
-							warn "'Mk/${_mk}' has already been patched."
+							warn "'Mk/${_mk}' has already been patched (ignoring)."
 							continue
 						fi
 						if [ 0 -ne `newer_vcs_id "${mirror_base_dir}/freebsd/Mk/${_mk}" "${_mk}"` ]; then
@@ -464,19 +480,28 @@ run_portshaker_command()
 									_copy_port=1
 									;;
 								1)
-									if newer_portrevision "${_portsdir}/${_category}/${_port}" "${_target}/${_category}/${_port}"; then
-										debug "${_category}/${_port} has been updated (higher PORTREVISION)."
-										_copy_port=1
-									else
-										debug "${_category}/${_port} has not been updated."
-									fi
+									newer_portrevision "${_portsdir}/${_category}/${_port}" "${_target}/${_category}/${_port}"
+									case $? in
+										0)
+											debug "${_category}/${_port} has been updated (higher PORTREVISION)."
+											_copy_port=1
+											;;
+										1)
+											debug "${_category}/${_port} has not been updated."
+											;;
+										2)
+											_version_going_backward=1
+											;;
+									esac
 									;;
 								2)
-									warn "${_category}/${_port}: PORTVERSION going backward (I will not merge this port)!"
 									_version_going_backward=1
 									;;
 							esac
 						fi
+					fi
+					if [ ${_version_going_backward} -eq 1 ]; then
+						warn "${_category}/${_port}: port version going backward (I will not merge this port)!"
 					fi
 					# Ensure merging is consistent
 					if [ ${_copy_port} -eq 0 -a ${_version_going_backward} = 0 ]; then
@@ -536,10 +561,10 @@ run_portshaker_command()
 						# Handle touched files
 						if [ -n "${_touched_files}" ]; then
 							if  [ "${_auto_install}" -eq 1 ]; then
-								warn "${_category}/${_port}:${_touched_files} changed (copying port anyway)."
+								warn "${_category}/${_port}:${_touched_files} changed but the port version is still the same (copying port anyway)."
 								_copy_port=1
 							elif [ ${_pretend} -eq 1 ]; then
-								warn "${_category}/${_port}:${_touched_files} changed but is PORTVERSION unchanged."
+								warn "${_category}/${_port}:${_touched_files} changed but the port version is still the same."
 							else
 								_r=""
 								while true; do
@@ -584,6 +609,12 @@ run_portshaker_command()
 									${RM} ${RM_RECURSIVE_FLAG} ${RM_FORCE_FLAG} "${_target}/${_category}/${_port}/${_special_file}" || err 1 "Cannot remove '${_target}/${_category}/${_port}/${_special_file}'."
 								fi
 							done
+							# Reference port in tinderbox
+							if [ -n "${_tinderbox_builds}" ]; then
+								for _build in ${_tinderbox_builds}; do
+									(cd "${PB}/scripts" && ${TC} addPort -b "${_build}" -d "${_category}/${_port}")
+								done
+							fi
 							# Keep a trace of merged ports (for speeding up tinderbox in hooks for example)
 							echo "${name}:${_category}/${_port}" >> "${_target}/.portshaker-merged-ports"
 						fi
