@@ -30,6 +30,8 @@ DIFF_FLAGS="-uN"
 GREP="grep"
 GREP_QUIET_FLAG="-q"
 
+MAKE="${MAKE:=make}"
+
 MKDIR="mkdir"
 MKDIR_PARENTS_FLAG="-p"
 
@@ -462,12 +464,17 @@ run_portshaker_command()
 					_version_going_backward=0
 
 					debug "Processing ${_category}/${_port}."
+
+					# Track packages version to help debugging failing update paths
+					_current_pkg_version="0"
+
 					# Determine wether the port has to be merged or not
 					if [ ! -d "${_target}/${_category}/${_port}" ]; then
 						debug "${_category}/${_port} is a new port."
 						_regen_category_makefile=1
 						_copy_port=1
 					else
+						_current_pkg_version=`${MAKE} -C "${_target}/${_category}/${_port}" -V PKGVERSION`
 						# Compare port versions
 						if newer_portepoch "${_portsdir}/${_category}/${_port}" "${_target}/${_category}/${_port}"; then
 							debug "${_category}/${_port} has been updated (higher PORTEPOCH)."
@@ -502,6 +509,7 @@ run_portshaker_command()
 					fi
 					if [ ${_version_going_backward} -eq 1 ]; then
 						warn "${_category}/${_port}: port version going backward (I will not merge this port)!"
+						awk -F: 'BEGIN { first = 0 ; } $2 == "'${_category}/${_port}'" { if (first == 0) { printf("                 `-> Update path: %s", $3); } printf(" --[%s]--> %s", $1, $4); first = 0 } END { printf("\n"); } ' < "${_target}/.portshaker-merged-ports"
 					fi
 					# Ensure merging is consistent
 					if [ ${_copy_port} -eq 0 -a ${_version_going_backward} = 0 ]; then
@@ -616,7 +624,15 @@ run_portshaker_command()
 								done
 							fi
 							# Keep a trace of merged ports (for speeding up tinderbox in hooks for example)
-							echo "${name}:${_category}/${_port}" >> "${_target}/.portshaker-merged-ports"
+							_new_pkg_version=`${MAKE} -C "${_target}/${_category}/${_port}" -V PKGVERSION 2> /dev/null`
+							if [ -z ${_new_pkg_version} ]; then
+								# Second chance: if it was not possible to get the package name from the tagret
+								# ports tree, try to get it from the source ports tree.  This is usefull if the
+								# current port has a master port in the source ports tree that has not already
+								# been merged in the target ports tree.
+								_new_pkg_version=`${MAKE} -C "${_portsdir}/${_category}/${_port}" -V PKGVERSION 2> /dev/null`
+							fi
+							echo "${name}:${_category}/${_port}:${_current_pkg_version}:${_new_pkg_version}" >> "${_target}/.portshaker-merged-ports"
 						fi
 					else
 						debug "Not copying '${_portsdir}/${_category}/${_port}' to '${_target}/${_category}/${_port}'."

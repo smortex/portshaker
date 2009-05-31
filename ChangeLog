@@ -1,3 +1,11 @@
+2009-06-01  Romain Tartière  <romain@blogreen.org>
+
+	* portshaker.subr.in: Display upgrade path in case of port version
+	going backward.  This should help debugging situations where two
+	source ports tree provides updates for a given port.  For now, the
+	solution would be to tweak source ports trees merge order in
+	portshaker.conf to avoid warnings.
+
 2009-05-29  Romain Tartière  <romain@blogreen.org>
 
 	* portshaker.subr.in: Fix PORTREVISION checking when a version of a
@@ -29,7 +37,7 @@
 	* portshaker.subr.in: Do not try to load user configuration if a
 	_portshaker_load_config variable is set to "no" so that it is possible
 	to run user-specific configuration agnostic unit-tests.  Add vcs $Id$
-	handleing routines to make it possible to further analysis error-prone
+	handling routines to make it possible to further analysis error-prone
 	situations. Changed some `=' to `-eq' in [(1) tests with integers.
 
 2009-02-05  Romain Tartière  <romain@blogreen.org>
