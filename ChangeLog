@@ -1,5 +1,10 @@
 2009-06-01  Romain Tartière  <romain@blogreen.org>
 
+	* portshaker.d.5.in,
+	* portshaker.subr.in: Add support for git source ports trees.
+
+2009-06-01  Romain Tartière  <romain@blogreen.org>
+
 	* portshaker.subr.in: Display upgrade path in case of port version
 	going backward.  This should help debugging situations where two
 	source ports tree provides updates for a given port.  For now, the

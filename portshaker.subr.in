@@ -27,6 +27,8 @@ CVS="cvs"
 DIFF="diff"
 DIFF_FLAGS="-uN"
 
+GIT="${GIT:=git}"
+
 GREP="grep"
 GREP_QUIET_FLAG="-q"
 
@@ -452,7 +454,7 @@ run_portshaker_command()
 			cd "${_portsdir}" || exit 1
 			for _category in `ls`; do
 				_regen_category_makefile=0
-				if [ ! -d ${_category} ] || [ ${_category} = "Mk" -o ${_category} = "CVS" -o ${_category} = ".svn" -o ${_category} = "Tools" ]; then
+				if [ ! -d ${_category} ] || [ ${_category} = "Mk" -o ${_category} = "CVS" -o ${_category} = ".svn" -o ${_category} = ".git" -o ${_category} = "Tools" ]; then
 					continue
 				fi
 				cd ${_category} || exit 1
@@ -727,6 +729,25 @@ run_portshaker_command()
 					${PORTSNAP} ${PORTSNAP_FLAGS} update
 					if [ $? -ne 0 ]; then
 						err 1 "portsnap update failed."
+					fi
+				fi
+				;;
+			git)
+				if [ -z "${git_clone_uri}" ]; then
+					err 1 "\$git_clone_uri is not defined."
+				fi
+				if [ ! -d "${_portsdir}/.git" ]; then
+					debug "Running '${GIT} clone ${git_clone_uri} ${_portsdir}'."
+					${GIT} clone "${git_clone_uri}" "${_portsdir}"
+					if [ $? -ne 0 ]; then
+						err 1 "git clone failed."
+					fi
+				else
+					cd "${_portsdir}"
+					debug "Running '${GIT} pull'."
+					${GIT} pull
+					if [ $? -ne 0 ]; then
+						err 1 "git pull failed."
 					fi
 				fi
 				;;

@@ -44,13 +44,18 @@ ports tree has to be fetched:
 .Pq Vt str
 Update method. Should be one of
 .Va cvs ,
-.Va portsnap
+.Va portsnap ,
+.Va git
 or
 .Va svn .
 .It Ar svn_checkout_path
 .Pq Vt str
 URI to checkout the ports tree when
 .Dq Ar method Ns Li = Ns Vt svn .
+.It Ar git_clone_uri
+.Pq Vt str
+git URI to clone when
+.Dq Ar method Ns Li = Ns Vt git .
 .It Ar cvs_root
 .Pq Vt str
 CVSROOT string to use for checking-out the ports tree when
