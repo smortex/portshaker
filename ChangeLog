@@ -1,3 +1,8 @@
+2009-06-04  Romain Tartière  <romain@blogreen.org>
+
+	* portshaker.sh.in: Raise an error when attempting to build an INDEX
+	for an invalid target ports tree.
+
 2009-06-01  Romain Tartière  <romain@blogreen.org>
 
 	* portshaker.d.5.in,

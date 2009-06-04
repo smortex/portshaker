@@ -175,7 +175,7 @@ if [ "${_do_update_index}" -eq 1 ]; then
 		fi
 
 		info "Building INDEX in ${_target}."
-		cd ${_target} && make index
+		cd ${_target} && make index || err 1 "Error building INDEX in ${_target}."
 
 		if type ${_ports_tree}_postupdateindex 1>/dev/null 2>&1; then
 			info "executing post-command '${_ports_tree}_postupdateindex()'."
