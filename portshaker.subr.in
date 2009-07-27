@@ -673,6 +673,14 @@ run_portshaker_command()
 					fi
 				done # while read _line
 			fi
+
+			# Merge UPDATING information
+			if [ -f "${_portsdir}/UPDATING" -a -f "${_target}/UPDATING" ]; then
+				info "Merging UPDATING entries from '${name}'."
+				mv "${_target}/UPDATING" "${_target}/UPDATING.orig"
+				${AWK} -f "@@SHAREDIR@@/portshaker/merge-updating.awk" -v in1="${_target}/UPDATING.orig" -v in2="${_portsdir}/UPDATING" -v out="${_target}/UPDATING"
+				rm "${_target}/UPDATING.orig"
+			fi
 			;;
 		update)
 			info "Updating '${name}' source ports tree with method '${method}'."

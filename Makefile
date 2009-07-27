@@ -6,7 +6,8 @@ VERSION=	0.0.8
 MAN5=		portshaker.conf.5 portshaker.d.5
 MAN8=		portshaker.8
 
-FILES=		portshaker.conf.sample portshaker.subr
+FILES=		merge-updating.awk portshaker.conf.sample portshaker.subr
+FILESDIR_merge-updating.awk=		${SHAREDIR}/portshaker
 FILESDIR_portshaker.conf.sample=	${ETCDIR}
 FILESDIR_portshaker.subr=		${SHAREDIR}/portshaker
 
