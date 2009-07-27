@@ -29,6 +29,7 @@ CLEANFILES+=	ChangeLog portshaker.conf.5 portshaker.d.5 portshaker.8 \
 ChangeLog: .PHONY
 	svn log -v --xml -r HEAD:419 https://bsd-sharp.googlecode.com/svn/branches/portshaker | \
 		xsltproc --stringparam strip-prefix "branches/portshaker" \
+		--stringparam authorsfile authors.xml \
 		--stringparam include-rev "yes" svn2cl.xsl - > ChangeLog
 
 beforeinstall:
