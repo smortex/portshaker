@@ -23,6 +23,7 @@ CP_RECURSIVE_FLAG="-R"
 CP_PRESERVE_FLAG="-p"
 
 CVS="cvs"
+CVS_FLAGS="-q"
 
 DIFF="diff"
 DIFF_FLAGS="-uN"
@@ -707,7 +708,7 @@ run_portshaker_command()
 				else
 					cd "${_portsdir}"
 					debug "Running '${CVS} ${CVS_FLAGS} update -Pd -A'."
-					${CVS} ${CVS_FLAGS} update -Pd -A
+					${CVS} ${CVS_FLAGS} update -Pd -A 2>&1 | sed 's|^cvs update: \(.*\) is no longer in the repository$|D \1|'
 					if [ $? -ne 0 ]; then
 						err 1 "CVS update failed."
 					fi

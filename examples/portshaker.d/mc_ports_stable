@@ -7,6 +7,6 @@ method="cvs"
 cvs_root=":pserver:anonymous:anoncvs@creme-brulee.marcuscom.com:/space/cvs/marcuscom-cvs"
 cvs_module="ports-stable"
 
-CVS_FLAGS="-z3"
+CVS_FLAGS="-q -z3"
 
 run_portshaker_command $*
