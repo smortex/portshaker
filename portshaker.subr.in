@@ -691,7 +691,7 @@ run_portshaker_command()
 			info "Updating '${name}' source ports tree with method '${method}'."
 
 			if [ ! -d "${_portsdir}" ] && [ ! "${method}" = "cvs" ]; then
-				info "Creating the '${_portsdir}' directory."
+				debug "Creating the '${_portsdir}' directory."
 				${MKDIR} ${MKDIR_PARENTS_FLAG} "${_portsdir}" || err 1 "Cannot create the '${_portsdir}' directory."
 			fi
 			if [ ! -w "${_portsdir}" ] && [ ! "${method}" = "cvs" ]; then
