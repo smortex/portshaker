@@ -468,6 +468,11 @@ run_portshaker_command()
 
 					debug "Processing ${_category}/${_port}."
 
+					if [ ! -f "${_port}/Makefile" ]; then
+						warn "${_category}/${_port}: No Makefile in this directory!"
+						continue
+					fi
+
 					# Track packages version to help debugging failing update paths
 					_current_pkg_version="0"
 
