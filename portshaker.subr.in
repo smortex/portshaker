@@ -557,7 +557,7 @@ run_portshaker_command()
 					if [ ${_version_going_backward} -eq 1 ]; then
 						warn "${_category}/${_port}: port version going backward (I will not merge this port)!"
 						if [ -f "${_target}/.portshaker-merged-ports" ]; then
-							awk -F: 'BEGIN { first = 0 ; } $2 == "'${_category}/${_port}'" { if (first == 0) { printf("                 `-> Update path: %s", $3); } printf(" --[%s]--> %s", $1, $4); first = 0 } END { printf("\n"); } ' < "${_target}/.portshaker-merged-ports"
+							awk -F: 'BEGIN { first = 1 ; } $2 == "'${_category}/${_port}'" { if (first == 1) { printf("                 `-> Update path: %s", $3); } printf(" --[%s]--> %s", $1, $4); first = 0 } END { if (first == 0) { printf("\n"); } } ' < "${_target}/.portshaker-merged-ports"
 						fi
 					fi
 					# Ensure merging is consistent
