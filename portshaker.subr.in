@@ -17,6 +17,7 @@ fi
 AWK="awk"
 
 CMP="cmp"
+CMP_FLAGS="-s"
 
 CP="cp"
 CP_RECURSIVE_FLAG="-R"
@@ -289,6 +290,44 @@ newer_portrevision()
 	fi
 }
 
+# unsubstitute_keywords
+#	Unexpand keywords in source file, writing the new file in dest file.
+#	$1 -- source file
+#	$2 -- dest file
+unsubstitute_keywords()
+{
+	sed -E -e 's#\$('$(echo ${VCS_ID_KEYWORDS} | sed -e 's/ /|/g')'):[^\$]*\$#$\1$#g' < $1 > $2
+}
+
+# compare_noid
+#	Compare provided files ignoring any VCS Ids. Returns 0 if files are
+#	identiqual.
+#	$1 -- Original file
+#	$2 -- New file
+compare_noid()
+{
+	ret=1
+	original="$1"  new="$2"
+
+	if [ -e "${original}" -a -e "${new}" ]; then
+		${CMP} ${CMP_FLAGS} "${original}" "${new}"
+		ret=$?
+		if [ ${ret} -ne 0 ]; then
+			# Files are different: un-substitutes keywords and try again.
+			original_noid=`mktemp -t MFC`
+			new_noid=`mktemp -t MFC`
+
+			unsubstitute_keywords "${original}" "${original_noid}"
+			unsubstitute_keywords "${new}"      "${new_noid}"
+
+			${CMP} ${CMP_FLAGS} "${original_noid}" "${new_noid}"
+			ret=$?
+			${RM} ${RM_FORCE_FLAG} "${original_noid}" "${new_noid}"
+		fi
+	fi
+	return ${ret}
+}
+
 # run_portshaker_command
 # 	Do all the magic!
 #
@@ -531,7 +570,7 @@ run_portshaker_command()
 								debug "${_category}/${_port}/${_file} has been created."
 								_touched_files="${_touched_files} ${_file}"
 							else
-								${CMP} "${_portsdir}/${_category}/${_port}/${_file}" "${_target}/${_category}/${_port}/${_file}" 1>/dev/null 2>&1
+								compare_noid "${_portsdir}/${_category}/${_port}/${_file}" "${_target}/${_category}/${_port}/${_file}"
 								if [ $? -ne 0 ]; then
 									debug "${_category}/${_port}/${_file} has been changed."
 									_touched_files="${_touched_files} ${_file}"
@@ -553,7 +592,7 @@ run_portshaker_command()
 									debug "${_category}/${_port}/files/${_patch} has been created."
 									_patches="${_patches} ${_patch}"
 								else
-									${CMP} "${_portsdir}/${_category}/${_port}/files/${_patch}" "${_target}/${_category}/${_port}/files/${_patch}" 1>/dev/null 2>&1
+									compare_noid "${_portsdir}/${_category}/${_port}/files/${_patch}" "${_target}/${_category}/${_port}/files/${_patch}"
 									if [ $? -ne 0 ]; then
 										debug "${_category}/${_port}/files/${_patch} has been changed."
 										_patches="${_patches} ${_patch}"
@@ -570,7 +609,7 @@ run_portshaker_command()
 							done
 						fi
 						for _patch in ${_patches}; do
-							${CMP} "${_portsdir}/${_category}/${_port}/files/${_patch}" "${_target}/${_category}/${_port}/files/${_patch}" 1>/dev/null 2>&1
+							compare_noid "${_portsdir}/${_category}/${_port}/files/${_patch}" "${_target}/${_category}/${_port}/files/${_patch}"
 							if [ $? -ne 0 ]; then
 								_touched_files="${_touched_files} files/${_patch}"
 							fi
