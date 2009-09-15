@@ -4,6 +4,6 @@
 . /usr/local/share/portshaker/portshaker.subr
 
 method="svn"
-svn_checkout_path="http://freebsd-texlive.googlecode.com/svn/branches/ports_marcuscom/"
+svn_checkout_path="http://freebsd-texlive.googlecode.com/svn/branches/ports-marcuscom/"
 
 run_portshaker_command $*
