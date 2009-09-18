@@ -1,0 +1,9 @@
+#!/bin/sh
+# $Id$
+
+. /usr/local/share/portshaker/portshaker.subr
+
+method="svn"
+svn_checkout_path="http://bsd-sharp.googlecode.com/svn/branches/bsd-sharp-releng-2.4"
+
+run_portshaker_command $*
