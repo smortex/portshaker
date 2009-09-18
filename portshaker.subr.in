@@ -721,7 +721,7 @@ run_portshaker_command()
 			fi
 
 			# Merge UPDATING information
-			if [ -f "${_portsdir}/UPDATING" -a -f "${_target}/UPDATING" ]; then
+			if [ -f "${_portsdir}/UPDATING" -a -f "${_target}/UPDATING" -a ${_pretend} -eq 0 ]; then
 				info "Merging UPDATING entries from '${name}'."
 				mv "${_target}/UPDATING" "${_target}/UPDATING.orig"
 				${AWK} -f "@@SHAREDIR@@/portshaker/merge-updating.awk" -v in1="${_target}/UPDATING.orig" -v in2="${_portsdir}/UPDATING" -v out="${_target}/UPDATING"
