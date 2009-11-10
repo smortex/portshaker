@@ -32,6 +32,8 @@ DIFF_IGNORE_FLAGS="--ignore-space-change --ignore-blank-lines --ignore-matching-
 
 GIT="${GIT:=git}"
 
+HG="${HG:=hg}"
+
 GREP="grep"
 GREP_QUIET_FLAG="-q"
 
@@ -495,7 +497,7 @@ run_portshaker_command()
 			cd "${_portsdir}" || exit 1
 			for _category in `ls`; do
 				_regen_category_makefile=0
-				if [ ! -d ${_category} ] || [ ${_category} = "Mk" -o ${_category} = "CVS" -o ${_category} = ".svn" -o ${_category} = ".git" -o ${_category} = "Tools" ]; then
+				if [ ! -d ${_category} ] || [ ${_category} = "Mk" -o ${_category} = "CVS" -o ${_category} = ".svn" -o ${_category} = ".git" -o ${_category} = ".hg" -o ${_category} = "Tools" ]; then
 					continue
 				fi
 				cd ${_category} || exit 1
@@ -806,6 +808,30 @@ run_portshaker_command()
 					${GIT} pull
 					if [ $? -ne 0 ]; then
 						err 1 "git pull failed."
+					fi
+				fi
+				;;
+			hg)
+				if [ -z "${hg_clone_uri}" ]; then
+					err 1 "\$hg_clone_uri is not defined."
+				fi
+				if [ ! -d "${_portsdir}/.hg" ]; then
+					debug "Running '${HG} clone ${hg_clone_uri} ${_portsdir}'."
+					${HG} clone "${hg_clone_uri}" "${_portsdir}"
+					if [ $? -ne 0 ]; then
+						err 1 "hg clone failed."
+					fi
+				else
+					cd "${_portsdir}"
+					debug "Running '${HG} pull'."
+					${HG} pull
+					if [ $? -ne 0 ]; then
+						err 1 "hg pull failed."
+					fi
+					debug "Running '${HG} update'."
+					${HG} update
+					if [ $? -ne 0 ]; then
+						err 1 "hg update failed."
 					fi
 				fi
 				;;

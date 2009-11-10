@@ -45,8 +45,9 @@ ports tree has to be fetched:
 Update method. Should be one of
 .Va cvs ,
 .Va portsnap ,
-.Va git
-or
+.Va git ,
+.Va hg
+(mercurial) or
 .Va svn .
 .It Ar svn_checkout_path
 .Pq Vt str
@@ -56,6 +57,10 @@ URI to checkout the ports tree when
 .Pq Vt str
 git URI to clone when
 .Dq Ar method Ns Li = Ns Vt git .
+.It Ar hg_clone_uri
+.Pq Vt str
+mercurial URI to clone when
+.Dq Ar method Ns Li = Ns Vt hg .
 .It Ar cvs_root
 .Pq Vt str
 CVSROOT string to use for checking-out the ports tree when
