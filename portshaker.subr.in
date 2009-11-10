@@ -28,6 +28,7 @@ CVS_FLAGS="-q"
 
 DIFF="diff"
 DIFF_FLAGS="-uN"
+DIFF_IGNORE_FLAGS="--ignore-space-change --ignore-blank-lines --ignore-matching-lines='^\(BROKEN\|IGNORE\|PORTSCOUT\)='"
 
 GIT="${GIT:=git}"
 
@@ -320,7 +321,7 @@ compare_noid()
 			unsubstitute_keywords "${original}" "${original_noid}"
 			unsubstitute_keywords "${new}"      "${new_noid}"
 
-			${CMP} ${CMP_FLAGS} "${original_noid}" "${new_noid}"
+			eval ${DIFF} ${DIFF_IGNORE_FLAGS} "${original_noid}" "${new_noid}" > /dev/null
 			ret=$?
 			${RM} ${RM_FORCE_FLAG} "${original_noid}" "${new_noid}"
 		fi
