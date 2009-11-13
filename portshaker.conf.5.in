@@ -61,6 +61,13 @@ can be told to automatically install the updated ports without prompting the
 user by appending an exclamation mark after the
 .Ar source
 ports tree name.
+.It Va use_zfs
+.Pq Vt bool
+Whether to use ZFS for cloning the first
+.Ar source
+ports tree to the
+.Ar target
+ports tree.
 .El
 .Ss Hooking
 Hooks for
