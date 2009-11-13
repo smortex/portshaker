@@ -426,11 +426,11 @@ run_portshaker_command()
 					zfs clone ${_source_dataset}@portshaker ${_target_dataset} || err 1 "Can't clone '${_source_dataset}@portshaker' to '${_target_dataset}'."
 					;;
 				*)
-				debug "Running '${RSYNC} ${RSYNC_ARGS} ${RSYNC_EXCLUDE} \"${_portsdir}/\" \"${_target}\"'."
-				${RSYNC} ${RSYNC_ARGS} ${RSYNC_EXCLUDE} "${_portsdir}/" "${_target}"
-				if [ $? -ne 0 ]; then
-					err 1 "Failed to clone '${_portsdir}' to '${_target}'."
-				fi
+					debug "Running '${RSYNC} ${RSYNC_ARGS} ${RSYNC_EXCLUDE} \"${_portsdir}/\" \"${_target}\"'."
+					${RSYNC} ${RSYNC_ARGS} ${RSYNC_EXCLUDE} "${_portsdir}/" "${_target}"
+					if [ $? -ne 0 ]; then
+						err 1 "Failed to clone '${_portsdir}' to '${_target}'."
+					fi
 					;;
 				esac
 				;;
