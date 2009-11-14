@@ -27,10 +27,7 @@ CLEANFILES+=	ChangeLog portshaker.conf.5 portshaker.d.5 portshaker.8 \
 		> ${.TARGET}
 
 ChangeLog: .PHONY
-	svn log -v --xml -r HEAD:419 https://bsd-sharp.googlecode.com/svn/branches/portshaker | \
-		xsltproc --stringparam strip-prefix "branches/portshaker" \
-		--stringparam authorsfile authors.xml \
-		--stringparam include-rev "yes" svn2cl.xsl - > ChangeLog
+	svn2cl -r HEAD:419 --authors authors.xml --strip-prefix=branches/portshaker --include-rev
 
 beforeinstall:
 	if [ ! -d "${DESTDIR}${SHAREDIR}/portshaker" ]; then mkdir -p "${DESTDIR}${SHAREDIR}/portshaker"; fi
