@@ -23,6 +23,8 @@ CP="cp"
 CP_RECURSIVE_FLAG="-R"
 CP_PRESERVE_FLAG="-p"
 
+CSUP="${CSUP:=csup}"
+
 CVS="cvs"
 CVS_FLAGS="-q"
 
@@ -772,6 +774,19 @@ run_portshaker_command()
 			fi
 
 			case "${method}" in
+			csup)
+				if [ -z "${csup_supfile}" ]; then
+					err 1 "\$csup_supfile is not defined."
+				fi
+				if [ "${name}" != "ports" ]; then
+					err 1 "A source ports tree updated using csup requires be named 'ports'."
+				fi
+				debug "Running '${CSUP} ${CSUP_FLAGS} ${csup_supfile}'."
+				${CSUP} ${CSUP_FLAGS} ${csup_supfile}
+				if [ $? -ne 0 ]; then
+					err 1 "csup update failed."
+				fi
+				;;
 			cvs)
 				if [ -z "${cvs_root}" ]; then
 					err 1 "\$cvs_root is not defined."

@@ -43,6 +43,7 @@ ports tree has to be fetched:
 .It Ar method
 .Pq Vt str
 Update method. Should be one of
+.Va csup ,
 .Va cvs ,
 .Va portsnap ,
 .Va git ,
@@ -61,6 +62,12 @@ git URI to clone when
 .Pq Vt str
 mercurial URI to clone when
 .Dq Ar method Ns Li = Ns Vt hg .
+.It Ar csup_supfile
+.Pq Vt str
+supfile to provide to
+.Xr csup 1
+when
+.Dq Ar method Ns Li = Ns Vt csup .
 .It Ar cvs_root
 .Pq Vt str
 CVSROOT string to use for checking-out the ports tree when
@@ -70,6 +77,18 @@ CVSROOT string to use for checking-out the ports tree when
 cvs module to checkout when
 .Dq Ar method Ns Li = Ns Va cvs .
 .El
+.Ss Special consideration when Dq Ar method Ns Li = Ns Vt csup
+When updating a
+.Ar source
+ports tree using the
+.Ar csup
+method, the
+.Ar source
+ports tree name has to be
+.Ar ports
+because the remote collection is named likely.
+.Xr portshaker 8
+will ensure this condition is met before attempting to perform any update.
 .Ss Hooking
 An update script may define the
 .Ao Ar port_tree Ac Ns Ar _pre Ns Ao Ar action Ac Ns ()
@@ -105,6 +124,7 @@ svn_checkout_path="http://bsd-sharp.googlecode.com/svn/trunk/"
 run_portshaker_command $*
 .Ed
 .Sh SEE ALSO
+.Xr csup 1 ,
 .Xr portshaker 8 ,
 .Xr portshaker.conf 5
 .Sh AUTHORS

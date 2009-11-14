@@ -8,7 +8,8 @@ SCRIPTS=	bsd_sharp \
 		freebsd_texlive_ports_marcuscom \
 		freebsd_texlive_releng \
 		mc_ports \
-		mc_ports_stable
+		mc_ports_stable \
+		ports
 
 SCRIPTSDIR=	${ETCDIR}/portshaker.d
 

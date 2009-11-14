@@ -1,0 +1,10 @@
+#!/bin/sh
+# $Id$
+
+. /usr/local/share/portshaker/portshaker.subr
+
+method="csup"
+
+csup_supfile="/usr/local/etc/portshaker.d/ports-supfile"
+
+run_portshaker_command $*
