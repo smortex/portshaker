@@ -3,8 +3,11 @@
 
 . /usr/local/share/portshaker/portshaker.subr
 
-method="csup"
+# Update ports using portsnap (faster)
+method="portsnap"
 
-csup_supfile="/usr/local/etc/portshaker.d/ports-supfile"
+# *OR* update ports using csup (hidden portshaker ninja gurus)
+#method="csup"
+#csup_supfile="/usr/local/etc/portshaker.d/ports-supfile"
 
 run_portshaker_command $*

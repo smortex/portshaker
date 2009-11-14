@@ -2,7 +2,6 @@ SCRIPTS=	bsd_sharp \
 		bsd_sharp_releng_2_0 \
 		bsd_sharp_releng_2_2 \
 		bsd_sharp_releng_2_4 \
-		freebsd \
 		freebsd_texlive \
 		freebsd_texlive_ports \
 		freebsd_texlive_ports_marcuscom \
