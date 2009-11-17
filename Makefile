@@ -39,5 +39,8 @@ tarball: ChangeLog
 	tar zcf ${TARBALL} ${DISTDIR}
 	rm -r ${DISTDIR}
 
+tag:
+	 svn copy https://bsd-sharp.googlecode.com/svn/branches/portshaker https://bsd-sharp.googlecode.com/svn/tags/portshaker-${VERSION} -m 'TAG portshaker-${VERSION}.'
+
 .include "Makefile.inc"
 .include <bsd.prog.mk>
