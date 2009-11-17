@@ -20,9 +20,9 @@ CLEANFILES+=	ChangeLog portshaker.conf.5 portshaker.d.5 portshaker.8 \
 .SUFFIXES:	.5.in .5 .8.in .8 .sh.in .sh .subr.in .subr
 
 .5.in.5 .8.in.8 .sh.in.sh .subr.in.subr:
-	sed -e "s|@@DESTDIR@@|${DESTDIR}|" \
-		-e "s|@@ETCDIR@@|${DESTDIR}${ETCDIR}|" \
-		-e "s|@@SHAREDIR@@|${DESTDIR}${SHAREDIR}|" \
+	sed -e "s|@@PREFIX@@|${PREFIX}|" \
+		-e "s|@@ETCDIR@@|${PREFIX}${ETCDIR}|" \
+		-e "s|@@SHAREDIR@@|${PREFIX}${SHAREDIR}|" \
 		< ${.IMPSRC} \
 		> ${.TARGET}
 
@@ -30,8 +30,8 @@ ChangeLog: .PHONY
 	svn2cl -r HEAD:419 --authors authors.xml --strip-prefix=branches/portshaker --include-rev
 
 beforeinstall:
-	if [ ! -d "${DESTDIR}${SHAREDIR}/portshaker" ]; then mkdir -p "${DESTDIR}${SHAREDIR}/portshaker"; fi
-	if [ ! -d "${DESTDIR}${ETCDIR}/portshaker.d" ]; then mkdir -p "${DESTDIR}${ETCDIR}/portshaker.d"; fi
+	if [ ! -d "${PREFIX}${SHAREDIR}/portshaker" ]; then mkdir -p "${PREFIX}${SHAREDIR}/portshaker"; fi
+	if [ ! -d "${PREFIX}${ETCDIR}/portshaker.d" ]; then mkdir -p "${PREFIX}${ETCDIR}/portshaker.d"; fi
 
 tarball: ChangeLog
 	svn export . ${DISTDIR}

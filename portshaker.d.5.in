@@ -102,11 +102,11 @@ is one of
 To configure the official FreeBSD ports tree as a
 .Ar source
 ports tree, create a
-.Ar @@DESTDIR@@/etc/portshaker.d/freebsd
+.Ar @@PREFIX@@/etc/portshaker.d/freebsd
 shell script containing:
 .Bd -literal
 #!/bin/sh
-\&. @@DESTDIR@@/share/portshaker/portshaker.subr
+\&. @@PREFIX@@/share/portshaker/portshaker.subr
 method="portsnap"
 run_portshaker_command $*
 .Ed
@@ -114,11 +114,11 @@ run_portshaker_command $*
 To configure the BSD# ports tree as a
 .Ar source
 ports tree, create a
-.Ar @@DESTDIR@@/etc/portshaker.d/bsd_sharp
+.Ar @@PREFIX@@/etc/portshaker.d/bsd_sharp
 shell script containing:
 .Bd -literal
 #!/bin/sh
-\&. @@DESTDIR@@/share/portshaker/portshaker.subr
+\&. @@PREFIX@@/share/portshaker/portshaker.subr
 method="svn"
 svn_checkout_path="http://bsd-sharp.googlecode.com/svn/trunk/"
 run_portshaker_command $*

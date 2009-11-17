@@ -160,13 +160,13 @@ will output extra debugging information. This is equivalent to using the
 flag twice.
 .El
 .Sh FILES
-.Bl -tag -width @@DESTDIR@@/etc/portshaker.conf -compact
-.It Pa @@DESTDIR@@/etc/portshaker.conf
+.Bl -tag -width @@PREFIX@@/etc/portshaker.conf -compact
+.It Pa @@PREFIX@@/etc/portshaker.conf
 Default location of the configuration file containing descriptive information about
 .Nm
 .Ar target
 ports trees.
-.It Pa @@DESTDIR@@/etc/portshaker.d/*
+.It Pa @@PREFIX@@/etc/portshaker.d/*
 Default location of
 .Nm
 .Ar source

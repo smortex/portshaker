@@ -1,7 +1,7 @@
 portshaker(8) use the standard FreeBSD Makefile mechanism.  Take a particular
-look at the DESTDIR environment variable is you want portshaker(8) to be
+look at the PREFIX  environment variable is you want portshaker(8) to be
 installed as a contributed software package and not as part of the system.
 
-make DESTDIR="/usr/local"
+make PREFIX="/usr/local"
 su
-make DESTDIR="/usr/local" install
+make PREFIX="/usr/local" install

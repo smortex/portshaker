@@ -94,7 +94,7 @@ To configure a tinderbox with official ports tree (tb_official), a second one wi
 .Bd -literal
 contributed_repositories="tb_official tb_bsd_sharp tb_gnome tb_bsd_sharp_gnome"
 
-tb="@@DESTDIR@@/tinderbox/"
+tb="@@PREFIX@@/tinderbox/"
 tb_official_ports_tree="${tb}/portstrees/FreeBSD/ports"
 tb_official_merge_from="freebsd"
 
