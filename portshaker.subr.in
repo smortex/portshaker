@@ -416,7 +416,12 @@ run_portshaker_command()
 				[yY][eE][sS]|[Tt][Rr][Uu][Ee]|[Oo][Nn]|1)
 					if [ -d "${_target}/.zfs" ]; then
 						debug "Running 'zfs destroy ${_target_dataset}'."
-						zfs destroy ${_target_dataset} || err 1 "Can't destroy ZFS volume '${_target_dataset}'."
+						zfs destroy ${_target_dataset}
+						if [ $? -ne 0 ]; then
+							echo "The following processes are using '${_target}':"
+							fstat -f "${_target}"
+							err 1 "Can't destroy ZFS volume '${_target_dataset}'."
+						fi
 					fi
 					if [ -d "${_portsdir}/.zfs/snapshot/portshaker" ]; then
 						debug "Running 'zfs destroy ${_source_dataset}@portshaker'."
