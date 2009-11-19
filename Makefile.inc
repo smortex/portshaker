@@ -1,8 +1,8 @@
 # $Id$
 
-BINDIR?=	/bin
-ETCDIR?=	/etc
+BINDIR?=	${PREFIX}/bin
+ETCDIR?=	${PREFIX}/etc
 .if defined(PREFIX)
-SHAREDIR?=	/share
-MANDIR?=	/man/man
+SHAREDIR?=	${PREFIX}/share
+MANDIR?=	${PREFIX}/man/man
 .endif

@@ -8,7 +8,7 @@ SUBDIR=		portshaker.d
 .include <bsd.prog.mk>
 
 beforeinstall:
-.if ! exists(${PREFIX}${ETCDIR}/portshaker.d)
+.if ! exists(${ETCDIR}/portshaker.d)
 	@echo " ,----------------------------( Error )----------------------------."
 	@printf " | The %-59s |\n" "'${PREFIX}${ETCDIR}/portshaker.d' directory does not exist."
 	@echo " |                                                                 |"
