@@ -510,7 +510,7 @@ run_portshaker_command()
 							continue
 						fi
 						if [ 0 -ne `newer_vcs_id "${mirror_base_dir}/freebsd/Mk/${_mk}" "${_mk}"` ]; then
-							warn "'Mk/${_mk}' is not in sync with the one provided in the FreeBSD ports."
+							warn "'Mk/${_mk}' from '${name}' is not in sync with the one provided in the FreeBSD ports."
 						fi
 						debug "Updating 'Mk/${_mk}'."
 						if [ ${_pretend} -eq 0 ]; then
