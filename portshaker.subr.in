@@ -408,7 +408,7 @@ run_portshaker_command()
 					_target_parent_dataset=`zfs list -H | awk "\\\$5 == \"${_target_parent}\" {print \\\$1}"`
 					_target_dataset="${_target_parent_dataset}/`basename ${_target}`"
 					if [ -z "${_source_dataset}" -o -z "${_target_parent_dataset}" ]; then
-						warn "'${_portsdir}' and '${_target_parent}' shall be ZFS volumes when \$use_zfs=yes. Falling back to rsync(1)."
+						warn "'${_portsdir}' and '${_target_parent}' shall be ZFS filesystem when \$use_zfs=yes. Falling back to rsync(1)."
 						use_zfs="no"
 					fi
 				esac
@@ -420,7 +420,7 @@ run_portshaker_command()
 						if [ $? -ne 0 ]; then
 							echo "The following processes are using '${_target}':"
 							fstat -f "${_target}"
-							err 1 "Can't destroy ZFS volume '${_target_dataset}'."
+							err 1 "Can't destroy ZFS filesystem '${_target_dataset}'."
 						fi
 					fi
 					if [ -d "${_portsdir}/.zfs/snapshot/portshaker" ]; then
