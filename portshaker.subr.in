@@ -444,29 +444,29 @@ run_portshaker_command()
 					if [ -d "${_target}/.zfs" ]; then
 						debug "Running 'zfs destroy ${_target_dataset}'."
 						if [ $_pretend -eq 0 ]; then
-						zfs destroy ${_target_dataset}
-						if [ $? -ne 0 ]; then
-							echo "The following processes are using '${_target}':"
-							fstat -f "${_target}"
-							err 1 "Can't destroy ZFS filesystem '${_target_dataset}'."
+							zfs destroy ${_target_dataset}
+							if [ $? -ne 0 ]; then
+								echo "The following processes are using '${_target}':"
+								fstat -f "${_target}"
+								err 1 "Can't destroy ZFS filesystem '${_target_dataset}'."
 							fi
 						fi
 					fi
 					debug "Running 'zfs clone ${_source_dataset}@portshaker ${_target_dataset}'."
 					if [ $_pretend -eq 0 ]; then
-					zfs clone ${_source_dataset}@portshaker ${_target_dataset} || err 1 "Can't clone '${_source_dataset}@portshaker' to '${_target_dataset}'."
+						zfs clone ${_source_dataset}@portshaker ${_target_dataset} || err 1 "Can't clone '${_source_dataset}@portshaker' to '${_target_dataset}'."
 					fi
 					debug "Running 'zfs set mountpoint="${_target}" "${_target_dataset}"'."
 					if [ $_pretend -eq 0 ]; then
-					zfs set mountpoint="${_target}" "${_target_dataset}" || err 1 "Can't set '${_target_dataset}' mountpoint to '${_target}'."
+						zfs set mountpoint="${_target}" "${_target_dataset}" || err 1 "Can't set '${_target_dataset}' mountpoint to '${_target}'."
 					fi
 				else
 					debug "Running '${RSYNC} ${RSYNC_ARGS} ${RSYNC_EXCLUDE} \"${_portsdir}/\" \"${_target}\"'."
 					if [ $_pretend -eq 0 ]; then
-					${RSYNC} ${RSYNC_ARGS} ${RSYNC_EXCLUDE} "${_portsdir}/" "${_target}"
-					if [ $? -ne 0 ]; then
-						err 1 "Failed to clone '${_portsdir}' to '${_target}'."
-					fi
+						${RSYNC} ${RSYNC_ARGS} ${RSYNC_EXCLUDE} "${_portsdir}/" "${_target}"
+						if [ $? -ne 0 ]; then
+							err 1 "Failed to clone '${_portsdir}' to '${_target}'."
+						fi
 					fi
 				fi
 				;;
