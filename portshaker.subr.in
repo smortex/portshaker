@@ -76,6 +76,15 @@ _portshaker_arg=""
 
 _pretend=0
 
+_use_zfs=0
+use_zfs=${use_zfs:=0}
+
+case $use_zfs in
+[Yy][Ee][Ss]|[Tt][Rr][Uu][Ee]|[Oo][Nn]|1)
+	_use_zfs=1
+	;;
+esac
+
 #
 #	functions
 #	---------
@@ -135,9 +144,11 @@ portshaker_usage()
 			echo "update"
 			;;
 		clone_to)
-			echo "clone_to -t target"
+			echo "clone_to [-p] -t target [-z zfs_target_dataset]"
 			echo "Supported arguments"
+			echo "  -p  Show what is going to happen but do not do anything (pretend mode)"
 			echo "  -t  Target directory to clone the ports tree to"
+			echo "  -z  ZFS dataset to use and mount as target directory"
 			;;
 		copy_to)
 			echo "copy_to -t target"
@@ -366,19 +377,30 @@ run_portshaker_command()
 			${name}_pre${_portshaker_arg} ${_portshaker_extra_args} || exit 1
 		fi
 
+		if [ $_use_zfs -eq 1 ]; then
+			_source_dataset=`zfs list -H | awk "\\\$5 == \"${_portsdir}\" {print \\\$1}"`
+		fi
+
 		# Proceed with the command
 		case "${_portshaker_arg}" in
 		clone_to|copy_to)
-			_args=`getopt apt: ${_portshaker_extra_args}`
+			_args=`getopt apt:z: ${_portshaker_extra_args}`
 			if [ $? -ne 0 ]; then
 				portshaker_usage
 			fi
 			set -- ${_args}
 			_target=""
+			_zfs_target_dataset=""
 			for _i; do
 				case "${_i}" in
+					-p)
+						_pretend=1
+						shift ;;
 					-t)
 						_target="$2"; shift
+						shift ;;
+					-z)
+						_zfs_target_dataset="$2"; shift
 						shift ;;
 					--)
 						shift; break ;;
@@ -398,48 +420,55 @@ run_portshaker_command()
 				debug "Creating the '${_target}' directory."
 				${MKDIR} ${MKDIR_PARENTS_FLAG} "${_target}" || err 1 "Cannot create '${_target}' directory."
 			fi
+			if [ $_use_zfs -eq 1 ]; then
+				_target_dataset=`zfs list -H | awk "\\\$5 == \"${_target}\" {print \\\$1}"`
+				if [ -z "${_source_dataset}" ]; then
+					warn "'${_portsdir}' shall be an existing ZFS filesystem when \$use_zfs=yes. Falling back to rsync(1)."
+					_use_zfs=0
+				fi
+			fi
 			case "${_portshaker_arg}" in
 			clone_to)
 				info "Cloning '${_portsdir}' to '${_target}'."
-				case "${use_zfs}" in
-				[yY][eE][sS]|[Tt][Rr][Uu][Ee]|[Oo][Nn]|1)
-					_source_dataset=`zfs list -H | awk "\\\$5 == \"${_portsdir}\" {print \\\$1}"`
-					_target_parent=`dirname ${_target}`
-					_target_parent_dataset=`zfs list -H | awk "\\\$5 == \"${_target_parent}\" {print \\\$1}"`
-					_target_dataset="${_target_parent_dataset}/`basename ${_target}`"
-					if [ -z "${_source_dataset}" -o -z "${_target_parent_dataset}" ]; then
-						warn "'${_portsdir}' and '${_target_parent}' shall be ZFS filesystem when \$use_zfs=yes. Falling back to rsync(1)."
-						use_zfs="no"
+				if [ $_use_zfs -eq 1 ]; then
+					if [ -z "${_target_dataset}" ]; then
+						warn "No ZFS dataset already exists with mountpoint '${_target}'."
+						_target_dataset="$_zfs_target_dataset"
+						if [ -z "${_target_dataset}" ]; then
+							warn "No '\$zfs_target_dataset' provided (hint: use '-z zfs_target_dataset')."
+							err 1 "Can't determine the ZFS dataset name for the '${name}' target ports tree."
+						fi
 					fi
-				esac
-				case "${use_zfs}" in
-				[yY][eE][sS]|[Tt][Rr][Uu][Ee]|[Oo][Nn]|1)
+				fi # _use_zfs -eq 1
+				if [ $_use_zfs -eq 1 ]; then
 					if [ -d "${_target}/.zfs" ]; then
 						debug "Running 'zfs destroy ${_target_dataset}'."
+						if [ $_pretend -eq 0 ]; then
 						zfs destroy ${_target_dataset}
 						if [ $? -ne 0 ]; then
 							echo "The following processes are using '${_target}':"
 							fstat -f "${_target}"
 							err 1 "Can't destroy ZFS filesystem '${_target_dataset}'."
+							fi
 						fi
 					fi
-					if [ -d "${_portsdir}/.zfs/snapshot/portshaker" ]; then
-						debug "Running 'zfs destroy ${_source_dataset}@portshaker'."
-						zfs destroy ${_source_dataset}@portshaker || err 1 "Can't destroy ZFS snapshot '${_source_dataset}@portshaker'."
-					fi
-					debug "Running 'zfs snapshot ${_source_dataset}@portshaker'."
-					zfs snapshot ${_source_dataset}@portshaker || err 1 "Can't create ZFS snapshot '${_source_dataset}@portshaker'."
 					debug "Running 'zfs clone ${_source_dataset}@portshaker ${_target_dataset}'."
+					if [ $_pretend -eq 0 ]; then
 					zfs clone ${_source_dataset}@portshaker ${_target_dataset} || err 1 "Can't clone '${_source_dataset}@portshaker' to '${_target_dataset}'."
-					;;
-				*)
+					fi
+					debug "Running 'zfs set mountpoint="${_target}" "${_target_dataset}"'."
+					if [ $_pretend -eq 0 ]; then
+					zfs set mountpoint="${_target}" "${_target_dataset}" || err 1 "Can't set '${_target_dataset}' mountpoint to '${_target}'."
+					fi
+				else
 					debug "Running '${RSYNC} ${RSYNC_ARGS} ${RSYNC_EXCLUDE} \"${_portsdir}/\" \"${_target}\"'."
+					if [ $_pretend -eq 0 ]; then
 					${RSYNC} ${RSYNC_ARGS} ${RSYNC_EXCLUDE} "${_portsdir}/" "${_target}"
 					if [ $? -ne 0 ]; then
 						err 1 "Failed to clone '${_portsdir}' to '${_target}'."
 					fi
-					;;
-				esac
+					fi
+				fi
 				;;
 			copy_to)
 				info "Copying '${_portsdir}' to '${_target}'."
@@ -907,7 +936,21 @@ run_portshaker_command()
 				err 1 "Unsupported update method '${method}'."
 				;;
 			esac
-			;;
+
+			# If the updated ports tree is a ZFS filesystem, snapshot it.
+			if [ $_use_zfs -eq 1 -a -d "${_portsdir}/.zfs" ]; then
+				if [ -d "${_portsdir}/.zfs/snapshot/portshaker" ]; then
+					debug "Running 'zfs destroy -R ${_source_dataset}@portshaker'."
+					if [ $_pretend -eq 0 ]; then
+						zfs destroy -R ${_source_dataset}@portshaker || err 1 "Can't destroy ZFS snapshot '${_source_dataset}@portshaker'."
+					fi
+				fi
+				debug "Running 'zfs snapshot ${_source_dataset}@portshaker'."
+				if [ $_pretend -eq 0 ]; then
+					zfs snapshot ${_source_dataset}@portshaker || err 1 "Can't create ZFS snapshot '${_source_dataset}@portshaker'."
+				fi
+			fi
+			;; # _portshaker_arg = update
 		esac
 
 		# Look for a post-command and execute it

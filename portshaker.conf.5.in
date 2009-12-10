@@ -67,7 +67,27 @@ Whether to use ZFS for cloning the first
 .Ar source
 ports tree to the
 .Ar target
-ports tree. When using this option, you may want to set
+ports tree.
+.Pp
+A
+.Ao Ar target Ac Ns Va _zfs_dataset
+variable can be used to control the ZFS dataset used for the filesystem. By default, a dataset with the name of the
+.Ar target
+ports tree is created as a child of the dataset of the
+.Ar target
+ports tree's parent directory's dataset (i.e. if the
+.Ar /usr
+filesystem's dataset is
+.Ar data/foo ,
+then the dataset for the
+.Ar /usr/ports
+directory will be
+.Ar data/foo/ports ) .
+This requires the
+.Ar target
+ports tree's parent directory to be a ZFS filesystem.
+.Pp
+When using this option, you may want to set
 .Ar DISTDIR
 in
 .Ar /etc/make.conf
