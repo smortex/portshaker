@@ -421,7 +421,9 @@ run_portshaker_command()
 				${MKDIR} ${MKDIR_PARENTS_FLAG} "${_target}" || err 1 "Cannot create '${_target}' directory."
 			fi
 			if [ $_use_zfs -eq 1 ]; then
+				if [ -d "${_target}/.zfs" ]; then
 				_target_dataset=`zfs list -H | awk "\\\$5 == \"${_target}\" {print \\\$1}"`
+				fi
 				if [ -z "${_source_dataset}" ]; then
 					warn "'${_portsdir}' shall be an existing ZFS filesystem when \$use_zfs=yes. Falling back to rsync(1)."
 					_use_zfs=0
@@ -436,7 +438,8 @@ run_portshaker_command()
 						_target_dataset="$_zfs_target_dataset"
 						if [ -z "${_target_dataset}" ]; then
 							warn "No '\$zfs_target_dataset' provided (hint: use '-z zfs_target_dataset')."
-							err 1 "Can't determine the ZFS dataset name for the '${name}' target ports tree."
+							warn "Falling back to rsync(1)."
+							_use_zfs=0
 						fi
 					fi
 				fi # _use_zfs -eq 1
@@ -452,9 +455,14 @@ run_portshaker_command()
 							fi
 						fi
 					fi
-					debug "Running 'zfs clone ${_source_dataset}@portshaker ${_target_dataset}'."
+					# Get the latests snapshot available.
+					_snapshot=`cd ${_portsdir}/.zfs/snapshot && ls -d portshaker-* | tail -n 1`
+					if [ -z "${_snapshot}" ]; then
+						err 1 "No snapshot for '${_source_dataset}'.  Update the '${name}' source port tree then retry."
+					fi
+					debug "Running 'zfs clone ${_source_dataset}@${_snapshot} ${_target_dataset}'."
 					if [ $_pretend -eq 0 ]; then
-						zfs clone ${_source_dataset}@portshaker ${_target_dataset} || err 1 "Can't clone '${_source_dataset}@portshaker' to '${_target_dataset}'."
+						zfs clone ${_source_dataset}@${_snapshot} ${_target_dataset} || err 1 "Can't clone '${_source_dataset}@${_snapshot}' to '${_target_dataset}'."
 					fi
 					debug "Running 'zfs set mountpoint="${_target}" "${_target_dataset}"'."
 					if [ $_pretend -eq 0 ]; then
@@ -939,15 +947,17 @@ run_portshaker_command()
 
 			# If the updated ports tree is a ZFS filesystem, snapshot it.
 			if [ $_use_zfs -eq 1 -a -d "${_portsdir}/.zfs" ]; then
-				if [ -d "${_portsdir}/.zfs/snapshot/portshaker" ]; then
-					debug "Running 'zfs destroy -R ${_source_dataset}@portshaker'."
+				for p in "${_portsdir}/.zfs/snapshot/portshaker*"; do
+					# Purge old snapshots
+					debug "Running 'zfs destroy ${_source_dataset}@`basename ${p}`'."
 					if [ $_pretend -eq 0 ]; then
-						zfs destroy -R ${_source_dataset}@portshaker || err 1 "Can't destroy ZFS snapshot '${_source_dataset}@portshaker'."
+						zfs destroy ${_source_dataset}@`basename ${p}`
 					fi
-				fi
-				debug "Running 'zfs snapshot ${_source_dataset}@portshaker'."
+				done
+				date=`date +%F:%T`
+				debug "Running 'zfs snapshot ${_source_dataset}@portshaker-${date}'."
 				if [ $_pretend -eq 0 ]; then
-					zfs snapshot ${_source_dataset}@portshaker || err 1 "Can't create ZFS snapshot '${_source_dataset}@portshaker'."
+					zfs snapshot "${_source_dataset}@portshaker-${date}" || err 1 "Can't create ZFS snapshot '${_source_dataset}@portshaker-${date}'."
 				fi
 			fi
 			;; # _portshaker_arg = update

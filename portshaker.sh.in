@@ -147,6 +147,7 @@ if [ "${_do_merge}" -eq 1 ]; then
 				_merge_flags="${_merge_flags} -a"
 			fi
 			if [ "${_first}" -eq 1 ]; then
+				if [ $_use_zfs -eq 1 ]; then
 				_zfs_dataset=`eval echo \\\$${_ports_tree}_zfs_dataset`
 				if [ -z "${_zfs_dataset}" ]; then
 					# ZFS dataset not set in configuration.
@@ -154,11 +155,15 @@ if [ "${_do_merge}" -eq 1 ]; then
 					_target_parent=`dirname "${_target}"`
 					_target_parent_zfs_dataset=`zfs list -H | awk "\\\$5 == \"${_target_parent}\" {print \\\$1}"`
 					if [ -z "${_target_parent_zfs_dataset}" ]; then
-						err 1 "Target parent directory '${_target_parent}' is not a ZFS filesystem.  '\\\$${_ports_tree}_zfs_dataset' shall be set explicitely."
+						warn "Target parent directory '${_target_parent}' is not a ZFS filesystem.  '\\\$${_ports_tree}_zfs_dataset' should be set explicitely."
+					else
+						_zfs_dataset="${_target_parent_zfs_dataset}/${_ports_tree}"
 					fi
-					_zfs_dataset="${_target_parent_zfs_dataset}/${_ports_tree}"
 				fi
+				if [ -n "$_zfs_dataset" ]; then
 				_merge_flags="${_merge_flags} -z ${_zfs_dataset}"
+				fi
+				fi
 				${config_dir}/portshaker.d/${_source} clone_to ${_merge_flags} -t ${_target} || exit 1
 				_first=0
 			else
