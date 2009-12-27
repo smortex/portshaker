@@ -947,11 +947,11 @@ run_portshaker_command()
 
 			# If the updated ports tree is a ZFS filesystem, snapshot it.
 			if [ $_use_zfs -eq 1 -a -d "${_portsdir}/.zfs" ]; then
-				for p in "${_portsdir}/.zfs/snapshot/portshaker*"; do
+				for p in "${_portsdir}/.zfs/snapshot/portshaker"*; do
 					# Purge old snapshots
 					debug "Running 'zfs destroy ${_source_dataset}@`basename ${p}`'."
 					if [ $_pretend -eq 0 ]; then
-						zfs destroy ${_source_dataset}@`basename ${p}`
+						zfs destroy ${_source_dataset}@`basename ${p}` >/dev/null 2>&1
 					fi
 				done
 				date=`date +%F:%T`
