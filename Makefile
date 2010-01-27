@@ -1,7 +1,7 @@
 # $Id$
 
 SCRIPTS=	portshaker.sh
-VERSION=	0.0.12
+VERSION=	0.0.13
 
 MAN5=		portshaker.conf.5 portshaker.d.5
 MAN8=		portshaker.8
