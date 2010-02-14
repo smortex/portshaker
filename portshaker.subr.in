@@ -30,7 +30,8 @@ CVS_FLAGS="-q"
 
 DIFF="diff"
 DIFF_FLAGS="-uN"
-DIFF_IGNORE_FLAGS="--ignore-space-change --ignore-blank-lines --ignore-matching-lines='^\(BROKEN\|IGNORE\|PORTSCOUT\)='"
+DIFF_IGNORE_FLAGS_MK="--ignore-matching-lines='\$\(FreeBSD\|Id\|MCom\)\$'"
+DIFF_IGNORE_FLAGS_PORT="--ignore-space-change --ignore-blank-lines --ignore-matching-lines='^\(BROKEN\|IGNORE\|PORTSCOUT\)='"
 
 GIT="${GIT:=git}"
 
@@ -195,20 +196,20 @@ read_file_vcs_keyword()
 	${GREP} -o "\\\$$2:[^\$]*\\\$" "$1"
 }
 
-# newer_vcs_id
-# 	Compate two VCS $Id...$ string and outputs the delta as the number 1 if
-# 	the revision is going upwards or -1 if the revision is going downward,
-# 	returning 1. If the revision has not changed, 0 is both output and
-# 	returned.
-# 	$1 - File to compate
+# newer_or_same_vcs_id
+# 	Compare VCS $Ids...$ in files and returns 0 unless the version is going
+# 	backwards in which case 1 is returned.
+# 	$1 - File to compare
 # 	$2 - Reference File
-newer_vcs_id()
+newer_or_same_vcs_id()
 {
+	_ret=0
+
 	for _keyword in ${VCS_ID_KEYWORDS}; do
 		new_rev=$(read_file_vcs_keyword "$1" ${_keyword} | cut -d' ' -f3)
 		old_rev=$(read_file_vcs_keyword "$2" ${_keyword} | cut -d' ' -f3)
 
-		if [ -z "${new_rev}" -a -z "${old_rev}" ]; then
+		if [ -z "${new_rev}" -o -z "${old_rev}" ]; then
 			continue
 		fi
 
@@ -222,14 +223,15 @@ newer_vcs_id()
 			}
 		}'`
 
-		if [ ${_ret} -ne 0 ]; then
-			echo ${_ret}
-			return 1
-		fi
 	done
 
-	echo 0
-	return 0
+	#echo ${_ret}
+
+	if [ ${_ret} -eq -1 ]; then
+		return 1
+	else
+		return 0
+	fi
 }
 
 # newer_portepoch
@@ -336,7 +338,7 @@ compare_noid()
 			unsubstitute_keywords "${original}" "${original_noid}"
 			unsubstitute_keywords "${new}"      "${new_noid}"
 
-			eval ${DIFF} ${DIFF_IGNORE_FLAGS} "${original_noid}" "${new_noid}" > /dev/null
+			eval ${DIFF} ${DIFF_IGNORE_FLAGS_PORT} "${original_noid}" "${new_noid}" > /dev/null
 			ret=$?
 			${RM} ${RM_FORCE_FLAG} "${original_noid}" "${new_noid}"
 		fi
@@ -546,12 +548,12 @@ run_portshaker_command()
 							warn "'Mk/${_mk}' has already been patched (ignoring)."
 							continue
 						fi
-						if [ 0 -ne `newer_vcs_id "${mirror_base_dir}/freebsd/Mk/${_mk}" "${_mk}"` ]; then
-							warn "'Mk/${_mk}' from '${name}' is not in sync with the one provided in the FreeBSD ports."
+						if ! newer_or_same_vcs_id "${_mk}" "${mirror_base_dir}/freebsd/Mk/${_mk}"; then
+							err 1 "'Mk/${_mk}' from '${name}' is not in sync with the one provided in the FreeBSD ports."
 						fi
 						debug "Updating 'Mk/${_mk}'."
 						if [ ${_pretend} -eq 0 ]; then
-							if ${DIFF} ${DIFF_FLAGS} "${mirror_base_dir}/freebsd/Mk/${_mk}" "${_mk}" | (cd ${_target}/Mk && ${PATCH} ${PATCH_FLAGS}); then
+							if ${DIFF} ${DIFF_FLAGS} ${DIFF_IGNORE_FLAGS_MK} "${mirror_base_dir}/freebsd/Mk/${_mk}" "${_mk}" | (cd ${_target}/Mk && ${PATCH} ${PATCH_FLAGS}); then
 								${TOUCH} "${_target}/Mk/.${_mk}-${name}-patched"
 							else
 								err 1 "Unable to patch 'Mk/${_mk}'."
