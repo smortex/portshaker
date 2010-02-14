@@ -14,63 +14,35 @@ if [ "${_portshaker_load_config}" != "no" ]; then
 	. ${config_dir}/portshaker.conf
 fi
 
-AWK="awk"
+# User tunable variables
 
-CMP="cmp"
-CMP_FLAGS="-s"
-
-CP="cp"
-CP_RECURSIVE_FLAG="-R"
-CP_PRESERVE_FLAG="-p"
-
-CSUP="${CSUP:=csup}"
-
-CVS="cvs"
-CVS_FLAGS="-q"
-
-DIFF="diff"
-DIFF_FLAGS="-uN"
-DIFF_IGNORE_FLAGS_MK="--ignore-matching-lines='\$\(FreeBSD\|Id\|MCom\)\$'"
-DIFF_IGNORE_FLAGS_PORT="--ignore-space-change --ignore-blank-lines --ignore-matching-lines='^\(BROKEN\|IGNORE\|PORTSCOUT\)='"
-
+#CP_FLAGS="-v"
+#CSUP_FLAGS=""
+CVS="${CVS:=cvs}"
+CVS_FLAGS="${CVS_FLAGS:=-q}"		# Quiet
+DIFF_FLAGS="${DIFF_FLAGS:=-uN}"		# Unified diff, New files
 GIT="${GIT:=git}"
-
 HG="${HG:=hg}"
-
-GREP="grep"
-GREP_QUIET_FLAG="-q"
-
 MAKE="${MAKE:=make}"
-
-MKDIR="mkdir"
-MKDIR_PARENTS_FLAG="-p"
-
 PAGER="${PAGER:=less}"
-
-PATCH="patch"
-PATCH_FLAGS="-s"
-
-PORTSNAP="portsnap"
-PORTSNAP_FLAGS=""
-
-RM="rm"
-RM_RECURSIVE_FLAG="-r"
-RM_FORCE_FLAG="-f"
-
-RSYNC="rsync"
-RSYNC_ARGS="--archive --delete"
-RSYNC_EXCLUDE="--exclude packages --exclude distfiles"
-
-SVN="svn"
-SVN_FLAGS=""
-
-TOUCH="touch"
-
+PATCH_FLAGS="${PATCH_FLAGS:=-s}"	# Silent
+#PORTSNAP_FLAGS=""
+#RM_FLAGS=""
+#RSYNC_FLAGS=""
+SVN="${SVN:=svn}"
+#SVN_FLAGS=""
 VCS_ID_KEYWORDS="${VCS_ID_KEYWORDS:=FreeBSD Id MCom}"
 
-# Tinderbox related
+# Tinderbox related variables
 PB="${PB:=/usr/local/tinderbox}"
 TC="${TC:=${PB}/tc}"
+
+
+# Convenient variables
+DIFF_IGNORE_FLAGS_MK="--ignore-matching-lines='\$\(FreeBSD\|Id\|MCom\)\$'"
+DIFF_IGNORE_FLAGS_PORT="--ignore-space-change --ignore-blank-lines --ignore-matching-lines='^\(BROKEN\|IGNORE\|PORTSCOUT\)='"
+RSYNC_ARGS="--archive --delete"
+RSYNC_EXCLUDE="--exclude packages --exclude distfiles"
 
 _keywords="update clone_to copy_to merge_to"
 _portshaker_arg=""
@@ -183,7 +155,7 @@ portshaker_usage()
 #
 read_makefile_value()
 {
-	value=`${AWK} 'BEGIN { r = "0"} /^'$1'\??=/ { $1 = ""; r = $0; } END { print r }  ' Makefile`
+	value=`awk 'BEGIN { r = "0"} /^'$1'\??=/ { $1 = ""; r = $0; } END { print r }  ' Makefile`
 	echo $value
 }
 
@@ -193,7 +165,7 @@ read_makefile_value()
 # 	$1 - Keyword
 read_file_vcs_keyword()
 {
-	${GREP} -o "\\\$$2:[^\$]*\\\$" "$1"
+	grep -o "\\\$$2:[^\$]*\\\$" "$1"
 }
 
 # newer_or_same_vcs_id
@@ -328,7 +300,7 @@ compare_noid()
 	original="$1"  new="$2"
 
 	if [ -e "${original}" -a -e "${new}" ]; then
-		${CMP} ${CMP_FLAGS} "${original}" "${new}"
+		cmp -s "${original}" "${new}"
 		ret=$?
 		if [ ${ret} -ne 0 ]; then
 			# Files are different: un-substitutes keywords and try again.
@@ -338,9 +310,9 @@ compare_noid()
 			unsubstitute_keywords "${original}" "${original_noid}"
 			unsubstitute_keywords "${new}"      "${new_noid}"
 
-			eval ${DIFF} ${DIFF_IGNORE_FLAGS_PORT} "${original_noid}" "${new_noid}" > /dev/null
+			eval diff ${DIFF_IGNORE_FLAGS_PORT} "${original_noid}" "${new_noid}" > /dev/null
 			ret=$?
-			${RM} ${RM_FORCE_FLAG} "${original_noid}" "${new_noid}"
+			rm -f ${RM_FLAGS} "${original_noid}" "${new_noid}"
 		fi
 	fi
 	return ${ret}
@@ -364,7 +336,7 @@ run_portshaker_command()
 	# If the source ports tree directory does not exist, create it.
 	if [ ! -d "${mirror_base_dir}" ]; then
 		info "Creating the '${mirror_base_dir}' directory."
-		${MKDIR} ${MKDIR_PARENTS_FLAG} "${mirror_base_dir}" || err 1 "Failed to create '${mirror_base_dir}' directory."
+		mkdir -p "${mirror_base_dir}" || err 1 "Failed to create '${mirror_base_dir}' directory."
 	fi
 
 	# Only proceed known commands.
@@ -420,7 +392,7 @@ run_portshaker_command()
 			fi
 			if [ ! -d "${_target}" ]; then
 				debug "Creating the '${_target}' directory."
-				${MKDIR} ${MKDIR_PARENTS_FLAG} "${_target}" || err 1 "Cannot create '${_target}' directory."
+				mkdir -p "${_target}" || err 1 "Cannot create '${_target}' directory."
 			fi
 			if [ $_use_zfs -eq 1 ]; then
 				if [ -d "${_target}/.zfs" ]; then
@@ -471,9 +443,9 @@ run_portshaker_command()
 						zfs set mountpoint="${_target}" "${_target_dataset}" || err 1 "Can't set '${_target_dataset}' mountpoint to '${_target}'."
 					fi
 				else
-					debug "Running '${RSYNC} ${RSYNC_ARGS} ${RSYNC_EXCLUDE} \"${_portsdir}/\" \"${_target}\"'."
+					debug "Running 'rsync ${RSYNC_FLAGS} ${RSYNC_ARGS} ${RSYNC_EXCLUDE} \"${_portsdir}/\" \"${_target}\"'."
 					if [ $_pretend -eq 0 ]; then
-						${RSYNC} ${RSYNC_ARGS} ${RSYNC_EXCLUDE} "${_portsdir}/" "${_target}"
+						rsync ${RSYNC_FLAGS} ${RSYNC_ARGS} ${RSYNC_EXCLUDE} "${_portsdir}/" "${_target}"
 						if [ $? -ne 0 ]; then
 							err 1 "Failed to clone '${_portsdir}' to '${_target}'."
 						fi
@@ -482,8 +454,8 @@ run_portshaker_command()
 				;;
 			copy_to)
 				info "Copying '${_portsdir}' to '${_target}'."
-				debug Running "'${CP} ${CP_RECURSIVE_FLAG} ${CP_PRESERVE_FLAG} \"${_portsdir}/\" \"${_target}\"'."
-				${CP} ${CP_RECURSIVE_FLAG} ${CP_PRESERVE_FLAG} "${_portsdir}/" "${_target}"
+				debug Running "'cp -pr ${CP_FLAGS} \"${_portsdir}/\" \"${_target}\"'."
+				cp -pr ${CP_FLAGS} "${_portsdir}/" "${_target}"
 				if [ $? -ne 0 ]; then
 					err 1 "Failed to copy '${_portsdir}' to '${_target}'."
 				fi
@@ -553,8 +525,8 @@ run_portshaker_command()
 						fi
 						debug "Updating 'Mk/${_mk}'."
 						if [ ${_pretend} -eq 0 ]; then
-							if ${DIFF} ${DIFF_FLAGS} ${DIFF_IGNORE_FLAGS_MK} "${mirror_base_dir}/freebsd/Mk/${_mk}" "${_mk}" | (cd ${_target}/Mk && ${PATCH} ${PATCH_FLAGS}); then
-								${TOUCH} "${_target}/Mk/.${_mk}-${name}-patched"
+							if diff ${DIFF_FLAGS} ${DIFF_IGNORE_FLAGS_MK} "${mirror_base_dir}/freebsd/Mk/${_mk}" "${_mk}" | (cd ${_target}/Mk && patch ${PATCH_FLAGS}); then
+								touch "${_target}/Mk/.${_mk}-${name}-patched"
 							else
 								err 1 "Unable to patch 'Mk/${_mk}'."
 							fi
@@ -562,7 +534,7 @@ run_portshaker_command()
 					else
 						debug "Copying 'Mk/${_mk}'."
 						if [ ${_pretend} -eq 0 ]; then
-							${CP} "${_mk}" "${_target}/Mk/${_mk}" || err 1 "Unable to copy 'Mk/${_mk}'."
+							cp ${CP_FLAGS} "${_mk}" "${_target}/Mk/${_mk}" || err 1 "Unable to copy 'Mk/${_mk}'."
 						fi
 					fi
 				done
@@ -707,7 +679,7 @@ run_portshaker_command()
 										# diff
 										d*|D*)
 											for _file in ${_touched_files}; do
-												${DIFF} ${DIFF_FLAGS} "${_target}/${_category}/${_port}/${_file}" "${_portsdir}/${_category}/${_port}/${_file}"
+												diff ${DIFF_FLAGS} "${_target}/${_category}/${_port}/${_file}" "${_portsdir}/${_category}/${_port}/${_file}"
 											done | ${PAGER}
 											_r=""
 											;;
@@ -737,11 +709,11 @@ run_portshaker_command()
 					if [ ${_copy_port} -eq 1 -a ${_version_going_backward} -eq 0 ]; then
 						debug "Copying '${_portsdir}/${_category}/${_port}' to '${_target}/${_category}/${_port}'."
 						if [ ${_pretend} -eq 0 ]; then
-							${RM} ${RM_RECURSIVE_FLAG} ${RM_FORCE_FLAG} "${_target}/${_category}/${_port}" || err 1 "Cannot remove outdated '${_target}/${_category}/${_port}' port directory."
-							${CP} ${CP_PRESERVE_FLAG} ${CP_RECURSIVE_FLAG} "${_portsdir}/${_category}/${_port}" "${_target}/${_category}/${_port}" || err 1 "Cannot merge ${_category}/${_port}."
+							rm -rf ${RM_FLAGS} "${_target}/${_category}/${_port}" || err 1 "Cannot remove outdated '${_target}/${_category}/${_port}' port directory."
+							cp -pr ${CP_FLAGS} "${_portsdir}/${_category}/${_port}" "${_target}/${_category}/${_port}" || err 1 "Cannot merge ${_category}/${_port}."
 							for _special_file in CVS .svn files/CVS files/.svn; do
 								if [ -d "${_target}/${_category}/${_port}/${_special_file}" ]; then
-									${RM} ${RM_RECURSIVE_FLAG} ${RM_FORCE_FLAG} "${_target}/${_category}/${_port}/${_special_file}" || err 1 "Cannot remove '${_target}/${_category}/${_port}/${_special_file}'."
+									rm -rf ${RM_FLAGS} "${_target}/${_category}/${_port}/${_special_file}" || err 1 "Cannot remove '${_target}/${_category}/${_port}/${_special_file}'."
 								fi
 							done
 							# Reference port in tinderbox
@@ -787,7 +759,7 @@ run_portshaker_command()
 					if [ -d "${_target}/${_port}" ]; then
 						info "Removing obsolete port ${_port}."
 						if [ ${_pretend} -eq 0 ]; then
-							${RM} ${RM_RECURSIVE_FLAG} ${RM_FORCE_FLAG} "${_target}/${_port}" || err 1 "Cannot remove obsolete port ${_port}."
+							rm -rf ${RM_FLAGS} "${_target}/${_port}" || err 1 "Cannot remove obsolete port ${_port}."
 						fi
 					else
 						warn "${_port} referenced in ${_portsdir}/MOVED does not exist."
@@ -802,8 +774,8 @@ run_portshaker_command()
 			if [ -f "${_portsdir}/UPDATING" -a -f "${_target}/UPDATING" -a ${_pretend} -eq 0 ]; then
 				info "Merging UPDATING entries from '${name}'."
 				mv "${_target}/UPDATING" "${_target}/UPDATING.orig"
-				${AWK} -f "@@SHAREDIR@@/portshaker/merge-updating.awk" -v in1="${_target}/UPDATING.orig" -v in2="${_portsdir}/UPDATING" -v out="${_target}/UPDATING"
-				rm "${_target}/UPDATING.orig"
+				awk -f "@@SHAREDIR@@/portshaker/merge-updating.awk" -v in1="${_target}/UPDATING.orig" -v in2="${_portsdir}/UPDATING" -v out="${_target}/UPDATING"
+				rm ${RM_FLAGS} "${_target}/UPDATING.orig"
 			fi
 			;;
 		update)
@@ -811,7 +783,7 @@ run_portshaker_command()
 
 			if [ ! -d "${_portsdir}" ] && [ ! "${method}" = "cvs" ]; then
 				debug "Creating the '${_portsdir}' directory."
-				${MKDIR} ${MKDIR_PARENTS_FLAG} "${_portsdir}" || err 1 "Cannot create the '${_portsdir}' directory."
+				mkdir -p "${_portsdir}" || err 1 "Cannot create the '${_portsdir}' directory."
 			fi
 			if [ ! -w "${_portsdir}" ] && [ ! "${method}" = "cvs" ]; then
 				err 1 "'${_portsdir}' is not writable: cannot update '${name}'."
@@ -825,8 +797,8 @@ run_portshaker_command()
 				if [ "${name}" != "ports" ]; then
 					err 1 "A source ports tree updated using csup requires be named 'ports'."
 				fi
-				debug "Running '${CSUP} ${CSUP_FLAGS} ${csup_supfile}'."
-				${CSUP} ${CSUP_FLAGS} ${csup_supfile}
+				debug "Running 'csup ${CSUP_FLAGS} ${csup_supfile}'."
+				csup ${CSUP_FLAGS} ${csup_supfile}
 				if [ $? -ne 0 ]; then
 					err 1 "csup update failed."
 				fi
@@ -861,20 +833,20 @@ run_portshaker_command()
 				;;
 			portsnap)
 				PORTSNAP_FLAGS="${PORTSNAP_FLAGS} -p ${_portsdir}"
-				debug "Running '${PORTSNAP} ${PORTSNAP_FLAGS} fetch'."
-				${PORTSNAP} ${PORTSNAP_FLAGS} fetch
+				debug "Running 'portsnap ${PORTSNAP_FLAGS} fetch'."
+				portsnap ${PORTSNAP_FLAGS} fetch
 				if [ $? -ne 0 ]; then
 					err 1 "portsnap fetch failed."
 				fi
 				if [ ! -f ${_portsdir}/.portsnap.INDEX ]; then
-					debug "Running '${PORTSNAP} ${PORTSNAP_FLAGS} extract'."
-					${PORTSNAP} ${PORTSNAP_FLAGS} extract
+					debug "Running 'portsnap ${PORTSNAP_FLAGS} extract'."
+					portsnap ${PORTSNAP_FLAGS} extract
 					if [ $? -ne 0 ]; then
 						err 1 "portsnap extract failed."
 					fi
 				else
-					debug "Running '${PORTSNAP} ${PORTSNAP_FLAGS} update'."
-					${PORTSNAP} ${PORTSNAP_FLAGS} update
+					debug "Running 'portsnap ${PORTSNAP_FLAGS} update'."
+					portsnap ${PORTSNAP_FLAGS} update
 					if [ $? -ne 0 ]; then
 						err 1 "portsnap update failed."
 					fi
