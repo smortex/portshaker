@@ -19,9 +19,9 @@ main_merge_from+=	freebsd_texlive_2009 freebsd_texlive_2009
 portshaker.conf: portshaker.conf.part
 	@cp portshaker.conf.part portshaker.conf
 .if defined (WITH_BSDSHARP)
-	@echo "# For stable version of mono, replace `bsd_sharp' with:" >> portshaker.conf
-	@echo "#   - `bsd_sharp_releng_2_0' for mono 2.0.x;" >> portshaker.conf
-	@echo "#   - `bsd_sharp_releng_2_2' for mono 2.2.x;" >> portshaker.conf
+	@echo "# For stable version of mono, replace 'bsd_sharp' with:" >> portshaker.conf
+	@echo "#   - 'bsd_sharp_releng_2_0' for mono 2.0.x;" >> portshaker.conf
+	@echo "#   - 'bsd_sharp_releng_2_2' for mono 2.2.x;" >> portshaker.conf
 	@echo "#   - and so on..." >> portshaker.conf
 .endif
 	@echo "main_merge_from=\"${main_merge_from}\"" >> portshaker.conf
