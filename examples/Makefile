@@ -13,7 +13,7 @@ main_merge_from+=	bsd_sharp
 main_merge_from+=	marcuscom_ports
 .endif
 .if defined (WITH_TEXLIVE)
-main_merge_from+=	freebsd_texlive_2009 freebsd_texlive_2009
+main_merge_from+=	freebsd_texlive_2009 freebsd_texlive_releng_2009
 .endif
 
 portshaker.conf: portshaker.conf.part
