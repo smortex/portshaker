@@ -2,12 +2,12 @@ SCRIPTS=	bsd_sharp \
 		bsd_sharp_releng_2_0 \
 		bsd_sharp_releng_2_2 \
 		bsd_sharp_releng_2_4 \
-		freebsd_texlive \
+		freebsd_texlive_2009 \
+		freebsd_texlive_releng_2009 \
 		freebsd_texlive_ports \
 		freebsd_texlive_ports_marcuscom \
-		freebsd_texlive_releng \
-		mc_ports \
-		mc_ports_stable \
+		marcuscom_ports \
+		marcuscom_ports_stable \
 		ports
 
 SCRIPTSDIR=	${ETCDIR}/portshaker.d
