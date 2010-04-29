@@ -17,6 +17,7 @@ main_merge_from+=	freebsd_texlive_2009 freebsd_texlive_2009
 .endif
 
 portshaker.conf: portshaker.conf.part
+	@echo "  GEN    portshaker.conf"
 	@cp portshaker.conf.part portshaker.conf
 .if defined (WITH_BSDSHARP)
 	@echo "# For stable version of mono, replace 'bsd_sharp' with:" >> portshaker.conf

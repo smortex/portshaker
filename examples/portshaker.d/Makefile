@@ -12,7 +12,8 @@ SCRIPTS=	bsd_sharp \
 
 .for script in ${SCRIPTS}
 ${script}: ${script.in}
-	sed -e "s|@@PREFIX@@|${PREFIX}|" \
+	@echo "  GEN    ${script}"
+	@sed -e "s|@@PREFIX@@|${PREFIX}|" \
 		< ${script}.in \
 		> ${script}
 .endfor

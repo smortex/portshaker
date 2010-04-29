@@ -20,7 +20,8 @@ CLEANFILES+=	ChangeLog portshaker.conf.5 portshaker.d.5 portshaker.8 \
 .SUFFIXES:	.5.in .5 .8.in .8 .sh.in .sh .subr.in .subr
 
 .5.in.5 .8.in.8 .sh.in.sh .subr.in.subr:
-	sed -e "s|@@PREFIX@@|${PREFIX}|" \
+	@echo "  GEN    ${.TARGET}"
+	@sed -e "s|@@PREFIX@@|${PREFIX}|" \
 		-e "s|@@ETCDIR@@|${ETCDIR}|" \
 		-e "s|@@SHAREDIR@@|${SHAREDIR}|" \
 		< ${.IMPSRC} \
