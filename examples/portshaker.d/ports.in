@@ -1,13 +1,13 @@
 #!/bin/sh
 # $Id$
 
-. /usr/local/share/portshaker/portshaker.subr
+. @@PREFIX@@/share/portshaker/portshaker.subr
 
 # Update ports using portsnap (faster)
 method="portsnap"
 
 # *OR* update ports using csup (hidden portshaker ninja gurus)
 #method="csup"
-#csup_supfile="/usr/local/etc/portshaker.d/ports-supfile"
+#csup_supfile="@@PREFIX@@/etc/portshaker.d/ports-supfile"
 
 run_portshaker_command $*

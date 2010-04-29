@@ -10,6 +10,16 @@ SCRIPTS=	bsd_sharp \
 		marcuscom_ports_stable \
 		ports
 
+.for script in ${SCRIPTS}
+${script}: ${script.in}
+	sed -e "s|@@PREFIX@@|${PREFIX}|" \
+		< ${script}.in \
+		> ${script}
+.endfor
+
 SCRIPTSDIR=	${ETCDIR}/portshaker.d
+
+clean:
+	rm -f ${SCRIPTS}
 
 .include <bsd.prog.mk>
