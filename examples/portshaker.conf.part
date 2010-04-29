@@ -1,0 +1,9 @@
+# vim:set syntax=sh:
+# $Id$
+
+#---[ Base directory for mirrored Ports Trees ]---
+mirror_base_dir="/var/cache/portshaker"
+
+#---[ Directories where to merge ports ]---
+ports_trees="main"
+
