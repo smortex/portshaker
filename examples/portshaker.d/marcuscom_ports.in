@@ -9,4 +9,13 @@ cvs_module="ports"
 
 CVS_FLAGS="-q -z3"
 
+marcuscom_ports_postmerge_to()
+{
+    warn "                         **WARNING**"
+    warn "The MarcusCom ports have been merged.   portshaker(8) is not a"
+    warn "merge method supported by the GNOME team.    If you are having"
+    warn "trouble using the GNOME ports, DO NOT ASK for support and have"
+    warn "a look to the marcus-merge(8) script."
+}
+
 run_portshaker_command $*
