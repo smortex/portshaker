@@ -1,7 +1,7 @@
 # $Id$
 
 SCRIPTS=	portshaker.sh
-VERSION=	0.9.0
+VERSION=	0.9.1
 
 NO_MANCOMPRESS=
 MAN5=		portshaker.conf.5 portshaker.d.5
