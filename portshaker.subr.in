@@ -129,10 +129,11 @@ portshaker_usage()
 			echo "  -t  Target directory to copy the ports tree to"
 			;;
 		merge_to)
-			echo "merge_to [-ap] [-b build] -t target"
+			echo "merge_to [-ap] [-b build] -m master -t target"
 			echo "Supported arguments:"
 			echo "  -a  Automatically copy port if files where touched but version is unchanged"
 			echo "  -b  Tinderboy build to add copied packages to"
+			echo "  -m  Master source ports tree (for comparing Mk/* files)"
 			echo "  -p  Show what is going to happen but do not do anything (pretend mode)"
 			echo "  -t  Target directory to merge the ports tree in"
 			;;
@@ -463,12 +464,13 @@ run_portshaker_command()
 			esac
 			;;
 		merge_to)
-			_args=`getopt ab:pt: ${_portshaker_extra_args}`
+			_args=`getopt ab:m:pt: ${_portshaker_extra_args}`
 			if [ $? -ne 0 ]; then
 				portshaker_usage
 			fi
 			set -- ${_args}
 			_auto_install=0
+			_master=""
 			_target=""
 			_tinderbox_builds=""
 			for _i; do
@@ -478,6 +480,9 @@ run_portshaker_command()
 						shift ;;
 					-b)
 						_tinderbox_builds="${_tinderbox_builds} $2"; shift
+						shift ;;
+					-m)
+						_master="$2"; shift
 						shift ;;
 					-p)
 						_pretend=1
@@ -489,7 +494,7 @@ run_portshaker_command()
 						shift; break ;;
 				esac
 			done
-			if [ -z "${_target}" ]; then
+			if [ -z "${_master}" -o -z "${_target}" ]; then
 				portshaker_usage
 			fi
 
@@ -515,17 +520,17 @@ run_portshaker_command()
 					if [ ${_mk} = "CVS" -o ${_mk} = ".svn" ]; then
 						continue
 					fi
-					if [ -e "${_target}/Mk/${_mk}" -a -e "${mirror_base_dir}/freebsd/Mk/${_mk}" ]; then
+					if [ -e "${_target}/Mk/${_mk}" -a -e "${mirror_base_dir}/${_master}/Mk/${_mk}" ]; then
 						if [ -e "${_target}/Mk/.${_mk}-${name}-patched" ]; then
 							warn "'Mk/${_mk}' has already been patched (ignoring)."
 							continue
 						fi
-						if ! newer_or_same_vcs_id "${_mk}" "${mirror_base_dir}/freebsd/Mk/${_mk}"; then
+						if ! newer_or_same_vcs_id "${_mk}" "${mirror_base_dir}/${_master}/Mk/${_mk}"; then
 							err 1 "'Mk/${_mk}' from '${name}' is not in sync with the one provided in the FreeBSD ports."
 						fi
 						debug "Updating 'Mk/${_mk}'."
 						if [ ${_pretend} -eq 0 ]; then
-							if diff ${DIFF_FLAGS} ${DIFF_IGNORE_FLAGS_MK} "${mirror_base_dir}/freebsd/Mk/${_mk}" "${_mk}" | (cd ${_target}/Mk && patch ${PATCH_FLAGS}); then
+							if diff ${DIFF_FLAGS} ${DIFF_IGNORE_FLAGS_MK} "${mirror_base_dir}/${_master}/Mk/${_mk}" "${_mk}" | (cd ${_target}/Mk && patch ${PATCH_FLAGS}); then
 								touch "${_target}/Mk/.${_mk}-${name}-patched"
 							else
 								err 1 "Unable to patch 'Mk/${_mk}'."
