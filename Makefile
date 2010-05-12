@@ -25,6 +25,7 @@ CLEANFILES+=	ChangeLog portshaker.conf.5 portshaker.d.5 portshaker.8 \
 	@sed -e "s|@@PREFIX@@|${PREFIX}|" \
 		-e "s|@@ETCDIR@@|${ETCDIR}|" \
 		-e "s|@@SHAREDIR@@|${SHAREDIR}|" \
+		-e "s|@@VERSION@@|${VERSION}|" \
 		< ${.IMPSRC} \
 		> ${.TARGET}
 

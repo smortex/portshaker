@@ -8,7 +8,7 @@
 #
 usage()
 {
-	echo "usage: $0 [-stv] [ -U | -u source ] [ -M | -m target ] [ -I | -i target ]" 1>&2
+	echo "usage: $0 [-stVv] [ -U | -u source ] [ -M | -m target ] [ -I | -i target ]" 1>&2
 	exit 1
 }
 
@@ -27,7 +27,7 @@ source_ports_trees()
 
 # Entry point
 
-args=`getopt Ii:Mm:stUu:v $*`
+args=`getopt Ii:Mm:stUu:Vv $*`
 if [ $? -ne 0 ]; then
 	usage
 fi
@@ -45,6 +45,10 @@ for i; do
 			;;
 		-t)
 			echo ${ports_trees}
+			exit 0
+			;;
+		-V)
+			echo "`basename $0` @@VERSION@@"
 			exit 0
 			;;
 		-v)
