@@ -102,7 +102,7 @@ is one of
 To configure the official FreeBSD ports tree as a
 .Ar source
 ports tree, create a
-.Ar @@PREFIX@@/etc/portshaker.d/freebsd
+.Ar @@PREFIX@@/etc/portshaker.d/ports
 shell script containing:
 .Bd -literal
 #!/bin/sh
