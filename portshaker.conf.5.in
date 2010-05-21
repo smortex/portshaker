@@ -69,6 +69,15 @@ ports tree to the
 .Ar target
 ports tree.
 .Pp
+When set, the directory where
+.Ar source
+ports tree are maintained should be a ZFS filesystem for
+.Xr portshaker 8
+to create new ZFS filesystems automatically; otherwise the ZFS filesystem shall
+be created by the user before running
+.Xr portshaker 8
+for the first time.
+.Pp
 A
 .Ao Ar target Ac Ns Va _zfs_dataset
 variable can be used to control the ZFS dataset used for the filesystem. By default, a dataset with the name of the

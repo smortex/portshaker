@@ -788,7 +788,18 @@ run_portshaker_command()
 
 			if [ ! -d "${_portsdir}" ] && [ ! "${method}" = "cvs" ]; then
 				debug "Creating the '${_portsdir}' directory."
-				mkdir -p "${_portsdir}" || err 1 "Cannot create the '${_portsdir}' directory."
+				if [ $_use_zfs -eq 1 ]; then
+				    _parent=`dirname "${_portsdir}"`
+				    _parent_dataset=`zfs list -H | awk "\\\$5 == \"${_parent}\" {print \\\$1}"`
+				    if [ -z "${_parent_dataset}" ]; then
+					err 1 "The ${_parent} directory shall be a ZFS filesystem when \$use_zfs=yes."
+				    fi
+				    _source_dataset="${_parent_dataset}/${name}"
+				    zfs create "${_source_dataset}" || err 1 "Cannot create the ${_source_dataset} ZFS filesystem."
+				    zfs set compression=gzip ${_source_dataset} || warn "Cannot set gzip compression on the ${_source_dataset} ZFS filesystem."
+				else
+				    mkdir -p "${_portsdir}" || err 1 "Cannot create the '${_portsdir}' directory."
+				fi
 			fi
 			if [ ! -w "${_portsdir}" ] && [ ! "${method}" = "cvs" ]; then
 				err 1 "'${_portsdir}' is not writable: cannot update '${name}'."
