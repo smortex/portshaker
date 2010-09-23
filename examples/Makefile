@@ -16,7 +16,7 @@ main_merge_from+=	enlightenment
 main_merge_from+=	marcuscom_ports
 .endif
 .if defined (WITH_TEXLIVE)
-main_merge_from+=	freebsd_texlive_2009 freebsd_texlive_releng_2009
+main_merge_from+=	freebsd_texlive freebsd_texlive_releng
 .endif
 
 portshaker.conf: portshaker.conf.part

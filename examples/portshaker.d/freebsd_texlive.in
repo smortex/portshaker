@@ -4,6 +4,6 @@
 . @@PREFIX@@/share/portshaker/portshaker.subr
 
 method="svn"
-svn_checkout_path="http://freebsd-texlive.googlecode.com/svn/branches/freebsd-texlive-2009"
+svn_checkout_path="http://freebsd-texlive.googlecode.com/svn/trunk"
 
 run_portshaker_command $*
