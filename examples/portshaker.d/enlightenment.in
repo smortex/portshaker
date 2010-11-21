@@ -4,6 +4,6 @@
 . @@PREFIX@@/share/portshaker/portshaker.subr
 
 method="svn"
-svn_checkout_path="svn://roorback.net/enlight-ports/trunk"
+svn_checkout_path="http://subversion.assembla.com/svn/e17-ports/trunk"
 
 run_portshaker_command $*
