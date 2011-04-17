@@ -759,8 +759,13 @@ run_portshaker_command()
 
 			# Remove obsolete ports
 			if [ -f "${_portsdir}/MOVED" ]; then
-				cat "${_portsdir}/MOVED" | while read _line; do
+				info "Merging MOVED entries from '${name}'."
+				grep -v '^#' "${_portsdir}/MOVED" | while read _line; do
 					_port=`echo $_line | cut -d'|' -f1`
+					if [ -z "${_port}" ]; then
+						warn "Malformed line found in ${_portsdir}/MOVED: \"${_line}\""
+						continue
+					fi
 					if [ -d "${_target}/${_port}" ]; then
 						info "Removing obsolete port ${_port}."
 						if [ ${_pretend} -eq 0 ]; then
