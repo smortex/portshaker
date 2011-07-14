@@ -7,7 +7,7 @@
 .Nd Maintain a set of ports trees.
 .Sh SYNOPSIS
 .Nm
-.Op Fl stv
+.Op Fl qstv
 .Op Fl U | Fl u Ar source
 .Op Fl M | Fl m Ar target
 .Op Fl I | Fl i Ar target
@@ -60,6 +60,8 @@ ports tree INDEX files.
 Merge the specified
 .Ar target
 ports tree.
+.It Fl q
+Decrease verbosity level.
 .It Fl s
 Display the list of configured
 .Ar source
@@ -73,7 +75,7 @@ Update the specified
 .Ar source
 ports tree.
 .It Fl v
-Be more verbose and display information messages. Specify twice to display debug messages as well.
+Increase verbosity level.
 .El
 .Ss Handling conflics
 When merging a

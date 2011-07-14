@@ -27,7 +27,7 @@ source_ports_trees()
 
 # Entry point
 
-args=`getopt Ii:Mm:stUu:Vv $*`
+args=`getopt Ii:Mm:qstUu:Vv $*`
 if [ $? -ne 0 ]; then
 	usage
 fi
@@ -35,7 +35,6 @@ fi
 _do_update=0
 _do_merge=0
 _do_update_index=0
-_debug_level=0
 set -- $args
 for i; do
 	case "$i" in
@@ -51,8 +50,12 @@ for i; do
 			echo "`basename $0` @@VERSION@@"
 			exit 0
 			;;
+		-q)
+			verbose="$(($verbose-1))"
+			shift
+			;;
 		-v)
-			_debug_level="$(($_debug_level+1))"
+			verbose="$(($verbose+1))"
 			shift
 			;;
 		-U)	_do_update=1
@@ -97,9 +100,9 @@ if [ -z "${_update_ports_trees}${_merge_ports_trees}${_update_index_ports_trees}
 	_merge_ports_trees="${ports_trees}"
 fi
 
-if [ ${_debug_level} -gt 0 ]; then
+if [ ${verbose} -gt 0 ]; then
 	export portshaker_info="YES"
-	if [ ${_debug_level} -gt 1 ]; then
+	if [ ${verbose} -gt 1 ]; then
 		export portshaker_debug="YES"
 	fi
 fi

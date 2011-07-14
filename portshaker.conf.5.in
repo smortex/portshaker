@@ -107,6 +107,11 @@ in
 in order to avoid lossing distfiles and packages each time you merge your
 .Ar target
 ports tree.
+.It Va verbose
+.Pq Vt int
+Default verbosity level,
+.Vt 0
+if unspecified.
 .El
 .Ss Hooking
 Hooks for

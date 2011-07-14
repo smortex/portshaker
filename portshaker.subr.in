@@ -8,6 +8,7 @@
 if [ -z "${_portshaker_subr_loaded}" ]; then
 
 _portshaker_subr_loaded="YES"
+verbose="0"
 
 if [ "${_portshaker_load_config}" != "no" ]; then
 	config_dir="@@ETCDIR@@"
