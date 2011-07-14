@@ -12,6 +12,9 @@ main_merge_from+=	bsd_sharp
 .if defined (WITH_ENLIGHTENMENT)
 main_merge_from+=	enlightenment
 .endif
+.if defined (WITH_HASKELL)
+main_merge_from+=	haskell
+.endif
 .if defined (WITH_MARCUSCOM)
 main_merge_from+=	marcuscom_ports
 .endif
@@ -46,12 +49,13 @@ all beforeinstall:
 	@false
 .endif
 .if ! defined (WITH_BSDSHARP) && ! defined (WITH_MARCUSCOM) && \
-    ! defined (WITH_TEXLIVE)
+    ! defined (WITH_TEXLIVE) && ! defined (WITH_HASKELL)
 	@echo " ,----------------------------( Error )----------------------------."
 	@echo " | You have to define at least one of the following to generate a  |"
 	@echo " | sample portshaker.conf that fits your needs:                    |"
 	@echo " |   - WITH_BSDSHARP      -- Merge BSD# team's developement ports; |"
 	@echo " |   - WITH_ENLIGHTENMENT -- Merge E17 work in progress ports;     |"
+	@echo " |   - WITH_HASKELL       -- Merge the Haskell's ports;            |"
 	@echo " |   - WITH_MARCUSCOM     -- Merge GNOME team's development ports; |"
 	@echo " |   - WITH_TEXLIVE       -- Merge unofficial TeXLive ports.       |"
 	@echo " \`-----------------------------------------------------------------'"

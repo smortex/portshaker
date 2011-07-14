@@ -7,6 +7,7 @@ SCRIPTS=	bsd_sharp \
 		freebsd_texlive_releng \
 		freebsd_texlive_ports \
 		freebsd_texlive_ports_marcuscom \
+		haskell \
 		marcuscom_ports \
 		marcuscom_ports_stable \
 		ports

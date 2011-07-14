@@ -1,0 +1,9 @@
+#!/bin/sh
+# $Id$
+
+. @@PREFIX@@/share/portshaker/portshaker.subr
+
+method="git"
+svn_checkout_path="git://github.com/freebsd-haskell/freebsd-haskell.git"
+
+run_portshaker_command $*
