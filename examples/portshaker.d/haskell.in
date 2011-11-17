@@ -4,6 +4,6 @@
 . @@PREFIX@@/share/portshaker/portshaker.subr
 
 method="git"
-svn_checkout_path="git://github.com/freebsd-haskell/freebsd-haskell.git"
+git_clone_uri="git://github.com/freebsd-haskell/freebsd-haskell.git"
 
 run_portshaker_command $*
