@@ -58,6 +58,10 @@ URI to checkout the ports tree when
 .Pq Vt str
 git URI to clone when
 .Dq Ar method Ns Li = Ns Vt git .
+.It Ar git_branch
+.Pq Vt str
+branch to track when
+.Dq Ar method Ns Li = Ns Vt git .
 .It Ar hg_clone_uri
 .Pq Vt str
 mercurial URI to clone when
