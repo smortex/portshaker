@@ -27,7 +27,7 @@ The following list provides a name and short description for each
 variable that can be set in the
 .Nm
 file:
-.Bl -tag
+.Bl -tag -width mirror_base_dir
 .It Va mirror_base_dir
 .Pq Vt str
 Base directory where
@@ -61,6 +61,14 @@ can be told to automatically install the updated ports without prompting the
 user by appending an exclamation mark after the
 .Ar source
 ports tree name.
+.It Va use_poudriere
+.Pq Vt bool
+If set, any ZFS
+.Ar target
+filesystem metadata is updated to be used with
+.Xr poudriere 8 .
+This option requires you to set
+.Va use_zfs .
 .It Va use_zfs
 .Pq Vt bool
 Whether to use ZFS for cloning the first
