@@ -51,6 +51,14 @@ variable must be set to the list of
 .Ar source
 ports trees to merge from.
 .Pp
+If the
+.At source
+ports tree name contains colons, they are replaced by spaces and
+.Xr portshaker 8
+will pass these extra argument to the script named by the first component. This
+allowing some kind of factorisation for multiple sources in a single
+repository.
+.Pp
 If a
 .Ar source
 ports tree is known to provide ports that are already provided in another ports
@@ -141,7 +149,7 @@ To maintain a single ports tree with BSD# ports:
 .Bd -literal
 ports_trees="main"
 main_ports_tree="/usr/ports"
-main_merge_from="freebsd bsd_sharp"
+main_merge_from="ports bsd_sharp"
 .Ed
 .Pp
 To configure a tinderbox with official ports tree (tb_official), a second one with BSD# ports tree (tb_bsd_sharp), a third one with GNOME-devel ports tree (tb_gnome) and a last one with both upcomming BSD# and GNOME (tb_bsd_sharp_gnome):
@@ -150,16 +158,23 @@ ports_trees="tb_official tb_bsd_sharp tb_gnome tb_bsd_sharp_gnome"
 
 tb="@@PREFIX@@/tinderbox/"
 tb_official_ports_tree="${tb}/portstrees/FreeBSD/ports"
-tb_official_merge_from="freebsd"
+tb_official_merge_from="ports"
 
 tb_bsd_sharp_ports_tree="${tb}/portstrees/BSD-sharp/ports"
-tb_bsd_sharp_merge_from="freebsd bsd_sharp"
+tb_bsd_sharp_merge_from="ports bsd_sharp"
 
 tb_gnome_ports_tree="${tb}/portstrees/GNOME/ports"
-tb_gnome_merge_from="freebsd gnomedevel"
+tb_gnome_merge_from="ports gnomedevel"
 
 tb_bsd_sharp_gnome_ports_tree="${tb}/portstrees/BSD-sharp-gnome/ports"
-tb_bsd_sharp_gnome_merge_from="freebsd bsd_sharp gnomedevel"
+tb_bsd_sharp_gnome_merge_from="ports bsd_sharp gnomedevel"
+.Pp
+To merge multiples redports sources in a single target ports tree:
+.Bd -literal
+ports_trees="main"
+main_ports_tree="/usr/ports"
+main_merge_from="ports redports:foo redports:bar"
+.Ed
 .Sh SEE ALSO
 .Xr make.conf 5 ,
 .Xr portshaker 8 ,

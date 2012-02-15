@@ -11,6 +11,7 @@ SCRIPTS=	bsd_sharp \
 		marcuscom_ports \
 		marcuscom_ports_stable \
 		ports \
+		redports \
 		xorg
 
 .for script in ${SCRIPTS}

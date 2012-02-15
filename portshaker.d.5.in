@@ -127,6 +127,35 @@ method="svn"
 svn_checkout_path="http://bsd-sharp.googlecode.com/svn/trunk/"
 run_portshaker_command $*
 .Ed
+.Pp
+To setup a dynamic redports
+.Ar source
+ports tree, create a
+.Ar @@PREFIX@@/etc/portshaker.d/redports
+shell script containing:
+.Bd -literal
+#!/bin/sh
+\&. /usr/local/share/portshaker/portshaker.subr
+username="$1"
+extra_info=":${username}"
+shift
+method="svn"
+svn_checkout_path="http://svn.redports.org/${username}"
+run_portshaker_command $*
+.Ed
+.Pp
+You can then specify the
+.Ar foo
+and
+.Ar bar
+ports tree at redports specifying the
+.Ar redports:foo
+and
+.Ar redports:bar
+.Ar source
+ports tree in your
+.Ar portshaker.conf
+configuration file.
 .Sh SEE ALSO
 .Xr csup 1 ,
 .Xr portshaker 8 ,

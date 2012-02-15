@@ -1,0 +1,14 @@
+#!/bin/sh
+# $Id$
+
+. @@PREFIX@@/share/portshaker/portshaker.subr
+
+username="$1"
+extra_info=":${username}"
+
+shift
+
+method="svn"
+svn_checkout_path="http://svn.redports.org/${username}"
+
+run_portshaker_command $*

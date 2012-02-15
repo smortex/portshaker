@@ -339,7 +339,7 @@ run_portshaker_command()
 	shift 1
 	_portshaker_extra_args="$*"
 
-	name=`basename $0`
+	name="`basename $0`${extra_info}"
 
 	_portsdir="${mirror_base_dir}/${name}"
 
