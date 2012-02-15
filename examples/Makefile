@@ -21,6 +21,9 @@ main_merge_from+=	marcuscom_ports
 .if defined (WITH_TEXLIVE)
 main_merge_from+=	freebsd_texlive freebsd_texlive_releng
 .endif
+.if defined (WITH_XORG)
+main_merge_from+=	xorg
+.endif
 
 portshaker.conf: portshaker.conf.part
 	@echo "  GEN    portshaker.conf"
@@ -58,6 +61,7 @@ all beforeinstall:
 	@echo " |   - WITH_HASKELL       -- Merge the Haskell's ports;            |"
 	@echo " |   - WITH_MARCUSCOM     -- Merge GNOME team's development ports; |"
 	@echo " |   - WITH_TEXLIVE       -- Merge unofficial TeXLive ports.       |"
+	@echo " |   - WITH_XORG          -- Merge Xorg development ports.         |"
 	@echo " \`-----------------------------------------------------------------'"
 	@false
 .endif

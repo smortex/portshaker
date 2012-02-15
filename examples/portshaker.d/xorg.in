@@ -1,0 +1,9 @@
+#!/bin/sh
+# $Id$
+
+. @@PREFIX@@/share/portshaker/portshaker.subr
+
+method="svn"
+svn_checkout_path="https://trillian.chruetertee.ch/svn/ports/trunk/"
+
+run_portshaker_command $*

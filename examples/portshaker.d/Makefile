@@ -10,7 +10,8 @@ SCRIPTS=	bsd_sharp \
 		haskell \
 		marcuscom_ports \
 		marcuscom_ports_stable \
-		ports
+		ports \
+		xorg
 
 .for script in ${SCRIPTS}
 ${script}: ${script.in}
