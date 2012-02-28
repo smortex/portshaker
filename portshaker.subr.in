@@ -247,23 +247,13 @@ newer_portversion()
 	if [ ${old_version} = "0." -a ${new_version} = "0." ]; then
 		return 0 # Always update
 	fi
-	[ ${old_version} = ${new_version} ] && return 1
 
-	while [ -n "${old_version}" -a -n "${new_version}" ]; do
-		if [ ${old_version%%.*} -lt ${new_version%%.*} ]; then
-			return 0
-		elif [ ${old_version%%.*} -gt ${new_version%%.*} ]; then
-			return 2
-		fi
-
-		old_version=${old_version##${old_version%%.*}.}
-		new_version=${new_version##${new_version%%.*}.}
-	done
-
-	if [ -z "${old_version}" -a -n "${new_version}" ]; then
-		return 0
-	fi
-	return 2
+	case $(pkg_version -t ${old_version} ${new_version}) in
+	    '<') return 0;;
+	    '=') return 1;;
+	    '>') return 2;;
+	    *) err 1 "Unsupported pkg_version reply";;
+	esac
 }
 
 # newer_portrevision
