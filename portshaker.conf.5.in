@@ -43,16 +43,36 @@ ports trees to maintain.
 .Pp
 A
 .Ao Ar target Ac Ns Va _ports_tree
+or a
+.Ao Ar target Ac Ns Va _poudriere_tree
 variable must be set to tell
 .Xr portshaker 8
-where the ports trees has to be merged and a
+where the ports trees has to be merged to and a
 .Ao Ar target Ac Ns Va _merge_from
 variable must be set to the list of
 .Ar source
 ports trees to merge from.
 .Pp
+When specifying a
+.Ao Ar target Ac Ns Va _ports_tree ,
+it should be set to the full path of the directory where the
+.Ar target
+ports tree is located.
+.Pp
+When specifying a
+.Ao Ar target Ac Ns Va _poudriere_tree ,
+it should be set to the
+.Ar name
+of the ports tree that will be later-on used with
+.Xr poudriere 8 .
+.Pp
+.Ao Ar target Ac Ns Va _ports_tree
+and
+.Ao Ar target Ac Ns Va _poudriere_tree
+are mutually exclusive.
+.Pp
 If the
-.At source
+.Ar source
 ports tree name contains colons, they are replaced by spaces and
 .Xr portshaker 8
 will pass these extra argument to the script named by the first component. This
@@ -69,14 +89,17 @@ can be told to automatically install the updated ports without prompting the
 user by appending an exclamation mark after the
 .Ar source
 ports tree name.
-.It Va use_poudriere
-.Pq Vt bool
-If set, any ZFS
-.Ar target
-filesystem metadata is updated to be used with
-.Xr poudriere 8 .
-This option requires you to set
-.Va use_zfs .
+.It Va poudriere_dataset
+.Pq Vt string
+The ZFS filesystem
+.Xr poudriere 8
+is configured to use.
+.It Va poudriere_ports_mountpoint
+.Pq string
+The directory where
+.Xr poudriere 8
+ports directory are mounted, usually
+.Ar @@PREFIX@@/poudriere/ports .
 .It Va use_zfs
 .Pq Vt bool
 Whether to use ZFS for cloning the first
@@ -168,6 +191,7 @@ tb_gnome_merge_from="ports gnomedevel"
 
 tb_bsd_sharp_gnome_ports_tree="${tb}/portstrees/BSD-sharp-gnome/ports"
 tb_bsd_sharp_gnome_merge_from="ports bsd_sharp gnomedevel"
+.Ed
 .Pp
 To merge multiples redports sources in a single target ports tree:
 .Bd -literal
@@ -177,7 +201,8 @@ main_merge_from="ports redports:foo redports:bar"
 .Ed
 .Sh SEE ALSO
 .Xr make.conf 5 ,
+.Xr portshaker.d 5 ,
 .Xr portshaker 8 ,
-.Xr portshaker.d 5
+.Xr poudriere 8
 .Sh AUTHORS
 .An Romain Tartière Aq romain@blogreen.org
