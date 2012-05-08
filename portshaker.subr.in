@@ -868,23 +868,10 @@ run_portshaker_command()
 				;;
 			portsnap)
 				PORTSNAP_FLAGS="${PORTSNAP_FLAGS} -p ${_portsdir}"
-				debug "Running 'portsnap ${PORTSNAP_FLAGS} fetch'."
-				portsnap ${PORTSNAP_FLAGS} fetch
+				debug "Running 'portsnap ${PORTSNAP_FLAGS} alfred'."
+				portsnap ${PORTSNAP_FLAGS} alfred
 				if [ $? -ne 0 ]; then
-					err 1 "portsnap fetch failed."
-				fi
-				if [ ! -f ${_portsdir}/.portsnap.INDEX ]; then
-					debug "Running 'portsnap ${PORTSNAP_FLAGS} extract'."
-					portsnap ${PORTSNAP_FLAGS} extract
-					if [ $? -ne 0 ]; then
-						err 1 "portsnap extract failed."
-					fi
-				else
-					debug "Running 'portsnap ${PORTSNAP_FLAGS} update'."
-					portsnap ${PORTSNAP_FLAGS} update
-					if [ $? -ne 0 ]; then
-						err 1 "portsnap update failed."
-					fi
+					err 1 "portsnap alfred failed."
 				fi
 				;;
 			git)
