@@ -404,9 +404,6 @@ run_portshaker_command()
 			fi
 			case "${_portshaker_arg}" in
 			clone_to)
-				if [ -n "${_poudriere_tree}" ]; then
-					_target="${_target}/ports"
-				fi
 				info "Cloning '${_portsdir}' to '${_target}'."
 				if [ $_use_zfs -eq 1 ]; then
 					if [ -z "${_target_dataset}" ]; then
