@@ -172,7 +172,7 @@ if [ "${_do_merge}" -eq 1 ]; then
 					if [ -z "${poudriere_dataset}" ]; then
 						err 1 "'\\\$poudriere_dataset' must be set in order to use '\\\$${_ports_tree}_use_poudriere'.";
 					fi
-					_zfs_dataset="${poudriere_dataset}/ports-${_poudriere_tree}"
+					_zfs_dataset="${poudriere_dataset}/ports/${_poudriere_tree}"
 					_merge_flags="${_merge_flags} -P ${_poudriere_tree}"
 				else
 

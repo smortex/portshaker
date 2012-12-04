@@ -321,6 +321,8 @@ run_portshaker_command()
 	shift 1
 	_portshaker_extra_args="$*"
 
+	debug "${_portshaker_arg} ${_portshaker_extra_args}"
+
 	name="`basename $0`${extra_info}"
 
 	_portsdir="${mirror_base_dir}/${name}"
@@ -391,7 +393,9 @@ run_portshaker_command()
 			fi
 			if [ $_use_zfs -eq 1 ]; then
 				if [ -d "${_target}/.zfs" ]; then
-				_target_dataset=`zfs list -H | awk "\\\$5 == \"${_target}\" {print \\\$1}"`
+				    _target_dataset=`zfs list -H | awk "\\\$5 == \"${_target}\" {print \\\$1}"`
+				elif [ -d "${_target}/ports/.zfs" ]; then
+				    _target_dataset=`zfs list -H | awk "\\\$5 == \"${_target}/ports\" {print \\\$1}"`
 				fi
 				if [ -z "${_source_dataset}" ]; then
 					warn "'${_portsdir}' shall be an existing ZFS filesystem when \$use_zfs=yes. Falling back to rsync(1)."
@@ -400,10 +404,13 @@ run_portshaker_command()
 			fi
 			case "${_portshaker_arg}" in
 			clone_to)
+				if [ -n "${_poudriere_tree}" ]; then
+					_target="${_target}/ports"
+				fi
 				info "Cloning '${_portsdir}' to '${_target}'."
 				if [ $_use_zfs -eq 1 ]; then
 					if [ -z "${_target_dataset}" ]; then
-						warn "No ZFS dataset already exists with mountpoint '${_target}'."
+						warn "No ZFS dataset already exists with mountpoint '${_target}'.  Will use '${_zfs_target_dataset}'."
 						_target_dataset="$_zfs_target_dataset"
 						if [ -z "${_target_dataset}" ]; then
 							warn "No '\$zfs_target_dataset' provided (hint: use '-z zfs_target_dataset')."
@@ -424,15 +431,6 @@ run_portshaker_command()
 							fi
 						fi
 					fi
-					if [ -n "${_poudriere_tree}" ]; then
-						# d
-						debug "Running 'zfs create ${_target_dataset}'."
-						if [ $_pretend -eq 0 ]; then
-							zfs create -o "poudriere:type=ports" -o "poudriere:name=${_poudriere_tree}" -o "mountpoint=${_target}" "${_target_dataset}"
-						fi
-						_target="${_target}/ports"
-						_target_dataset="${_target_dataset}/ports"
-					fi
 					# Get the latests snapshot available.
 					_snapshot=`cd ${_portsdir}/.zfs/snapshot && ls -d portshaker-* | tail -n 1`
 					if [ -z "${_snapshot}" ]; then
@@ -445,6 +443,13 @@ run_portshaker_command()
 					debug "Running 'zfs set mountpoint="${_target}" "${_target_dataset}"'."
 					if [ $_pretend -eq 0 ]; then
 						zfs set mountpoint="${_target}" "${_target_dataset}" || err 1 "Can't set '${_target_dataset}' mountpoint to '${_target}'."
+					fi
+					if [ -n "${_poudriere_tree}" ]; then
+						debug "Setting poudriere ports properties on '${_target_dataset}'"
+						if [ $_pretend -eq 0 ]; then
+							zfs set "poudriere:type=ports" "${_target_dataset}"
+							zfs set "poudriere:name=${_poudriere_tree}" "${_target_dataset}"
+						fi
 					fi
 				else
 					debug "Running 'rsync ${RSYNC_FLAGS} ${RSYNC_ARGS} ${RSYNC_EXCLUDE} \"${_portsdir}/\" \"${_target}\"'."
