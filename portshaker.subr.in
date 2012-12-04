@@ -858,14 +858,6 @@ run_portshaker_command()
 					fi
 				fi
 				;;
-			portsnap)
-				PORTSNAP_FLAGS="${PORTSNAP_FLAGS} -p ${_portsdir}"
-				debug "Running 'portsnap ${PORTSNAP_FLAGS} alfred'."
-				portsnap ${PORTSNAP_FLAGS} alfred
-				if [ $? -ne 0 ]; then
-					err 1 "portsnap alfred failed."
-				fi
-				;;
 			git)
 				if [ -z "${git_clone_uri}" ]; then
 					err 1 "\$git_clone_uri is not defined."
@@ -914,6 +906,14 @@ run_portshaker_command()
 					if [ $? -ne 0 ]; then
 						err 1 "hg update failed."
 					fi
+				fi
+				;;
+			portsnap)
+				PORTSNAP_FLAGS="${PORTSNAP_FLAGS} -p ${_portsdir}"
+				debug "Running 'portsnap ${PORTSNAP_FLAGS} alfred'."
+				portsnap ${PORTSNAP_FLAGS} alfred
+				if [ $? -ne 0 ]; then
+					err 1 "portsnap alfred failed."
 				fi
 				;;
 			rsync)

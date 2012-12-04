@@ -52,22 +52,6 @@ Update method. Should be one of
 .Va rsync
 or
 .Va svn .
-.It Ar svn_checkout_path
-.Pq Vt str
-URI to checkout the ports tree when
-.Dq Ar method Ns Li = Ns Vt svn .
-.It Ar git_clone_uri
-.Pq Vt str
-git URI to clone when
-.Dq Ar method Ns Li = Ns Vt git .
-.It Ar git_branch
-.Pq Vt str
-branch to track when
-.Dq Ar method Ns Li = Ns Vt git .
-.It Ar hg_clone_uri
-.Pq Vt str
-mercurial URI to clone when
-.Dq Ar method Ns Li = Ns Vt hg .
 .It Ar csup_supfile
 .Pq Vt str
 supfile to provide to
@@ -82,6 +66,18 @@ CVSROOT string to use for checking-out the ports tree when
 .Pq Vt str
 cvs module to checkout when
 .Dq Ar method Ns Li = Ns Va cvs .
+.It Ar git_clone_uri
+.Pq Vt str
+git URI to clone when
+.Dq Ar method Ns Li = Ns Vt git .
+.It Ar git_branch
+.Pq Vt str
+branch to track when
+.Dq Ar method Ns Li = Ns Vt git .
+.It Ar hg_clone_uri
+.Pq Vt str
+mercurial URI to clone when
+.Dq Ar method Ns Li = Ns Vt hg .
 .It Ar rsync_source_path
 .Pq Vt str
 path to copy data from when
@@ -92,6 +88,10 @@ extra arguments to pass to
 .Xr rsync 1
 when
 .Dq Ar method Ns Li = Ns Va rsync .
+.It Ar svn_checkout_path
+.Pq Vt str
+URI to checkout the ports tree from when
+.Dq Ar method Ns Li = Ns Vt svn .
 .El
 .Ss Special consideration when Dq Ar method Ns Li = Ns Vt csup
 When updating a
