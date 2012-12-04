@@ -414,20 +414,9 @@ run_portshaker_command()
 				fi # _use_zfs -eq 1
 				if [ $_use_zfs -eq 1 ]; then
 					if [ -d "${_target}/.zfs" ]; then
-						if [ -n "${_poudriere_tree}" -a -d "${_target}/ports/.zfs" ]; then
-							debug "Running 'zfs destroy ${_target_dataset}/ports'."
-							if [ $_pretend -eq 0 ]; then
-								zfs destroy "${_target_dataset}/ports"
-								if [ $? -ne 0 ]; then
-									echo "The following processes are using '${_target}/ports':"
-									fstat -f "${_target}/ports"
-									err 1 "Can't destroy ZFS filesystem '${_target_dataset}'."
-								fi
-							fi
-						fi
-						debug "Running 'zfs destroy ${_target_dataset}'."
+						debug "Running 'zfs destroy -r ${_target_dataset}'."
 						if [ $_pretend -eq 0 ]; then
-							zfs destroy ${_target_dataset}
+							zfs destroy -r ${_target_dataset}
 							if [ $? -ne 0 ]; then
 								echo "The following processes are using '${_target}':"
 								fstat -f "${_target}"
