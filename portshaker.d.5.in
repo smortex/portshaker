@@ -48,7 +48,9 @@ Update method. Should be one of
 .Va portsnap ,
 .Va git ,
 .Va hg
-(mercurial) or
+(mercurial),
+.Va rsync
+or
 .Va svn .
 .It Ar svn_checkout_path
 .Pq Vt str
@@ -80,6 +82,16 @@ CVSROOT string to use for checking-out the ports tree when
 .Pq Vt str
 cvs module to checkout when
 .Dq Ar method Ns Li = Ns Va cvs .
+.It Ar rsync_source_path
+.Pq Vt str
+path to copy data from when
+.Dq Ar method Ns Li = Ns Va rsync .
+.It Ar rsync_extra_args
+.Pq Vt str
+extra arguments to pass to
+.Xr rsync 1
+when
+.Dq Ar method Ns Li = Ns Va rsync .
 .El
 .Ss Special consideration when Dq Ar method Ns Li = Ns Vt csup
 When updating a

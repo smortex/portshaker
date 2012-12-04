@@ -29,7 +29,8 @@ PAGER="${PAGER:=less}"
 PATCH_FLAGS="${PATCH_FLAGS:=-s}"	# Silent
 #PORTSNAP_FLAGS=""
 #RM_FLAGS=""
-#RSYNC_FLAGS=""
+RSYNC=${RSYNC:=rsync}
+RSYNC_FLAGS=""
 SVN="${SVN:=svn}"
 #SVN_FLAGS=""
 VCS_ID_KEYWORDS="${VCS_ID_KEYWORDS:=FreeBSD Id MCom}"
@@ -913,6 +914,16 @@ run_portshaker_command()
 					if [ $? -ne 0 ]; then
 						err 1 "hg update failed."
 					fi
+				fi
+				;;
+			rsync)
+				if [ -z "${rsync_source_path}" ]; then
+					err 1 "\$rsync_source_path is not defined."
+				fi
+				debug "Running '${RSYNC} ${RSYNC_FLAGS} ${RSYNC_ARGS} ${rsync_extra_args} ${rsync_source_path}/ ${_portsdir}/'."
+				${RSYNC} ${RSYNC_FLAGS} ${RSYNC_ARGS} ${rsync_extra_args} "${rsync_source_path}/" "${_portsdir}/"
+				if [ $? -ne 0 ]; then
+					err 1 "rsync update failed."
 				fi
 				;;
 			svn)
