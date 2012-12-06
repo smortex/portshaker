@@ -331,6 +331,9 @@ run_portshaker_command()
 	# If the source ports tree directory does not exist, create it.
 	if [ ! -d "${mirror_base_dir}" ]; then
 		info "Creating the '${mirror_base_dir}' directory."
+		if [ $_use_zfs -eq 1 ]; then
+			err 1 "\$mirror_base_dir must be set to an existing  ZFS filesystem when \$use_zfs is set to '${use_zfs}'.  You have to manually create the proper ZFS filesystem according to your local setup."
+		fi
 		mkdir -p "${mirror_base_dir}" || err 1 "Failed to create '${mirror_base_dir}' directory."
 	fi
 
