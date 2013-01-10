@@ -926,11 +926,11 @@ run_portshaker_command()
 						err 1 "portsnap extract failed."
 					fi
 				else
-				debug "Running 'portsnap ${PORTSNAP_FLAGS} alfred'."
-				portsnap ${PORTSNAP_FLAGS} alfred
-				if [ $? -ne 0 ]; then
-					err 1 "portsnap alfred failed."
-				fi
+					debug "Running 'portsnap ${PORTSNAP_FLAGS} alfred'."
+					portsnap ${PORTSNAP_FLAGS} alfred
+					if [ $? -ne 0 ]; then
+						err 1 "portsnap alfred failed."
+					fi
 				fi
 				;;
 			rsync)
