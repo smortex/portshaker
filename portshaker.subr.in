@@ -150,15 +150,26 @@ portshaker_usage()
 # read_makefile_value
 # 	Reads the value of a variable from a Makefile in the current
 # 	directory.
-#	This is mostly identical to ``make -V $1'' but will not fail
-#	if the Makefile include a missing Makefile (for example a
-#	source ports tree provide a port that depends on another which
-#	is not included in the source ports tree).
-#	$1 - Name of the variable to read.
+# 	Try to do it without calling make(1) at first to avoid some overhead,
+# 	but fallback to it if:
+# 	  - the variable is empty;
+# 	    (e.g. the Makefile include another Makefile that sets the value)
+# 	  - the variable value starts with '$'
+# 	    (e.g. PORTREVISION= ${OPENLDAP_PORTREVISION})
+# 	In case of failure, return "0"
 #
+# 	$1 - Name of the variable to read.
 read_makefile_value()
 {
-	value=`awk 'BEGIN { r = "0"} /^'$1'\??=/ { $1 = ""; r = $0; } END { print r }  ' Makefile`
+	value=`awk 'BEGIN { r = ""} /^'$1'\??=/ { split($0, a, /=[[:space:]]*/); r = a[2]; } END { print r }  ' Makefile`
+	if [ -z "${value}" -o "${value%${value#?}}" = '$' ]; then
+		debug "Can't read variable '$1' from Makefile in '$PWD'.  Falling back to make(1)."
+		value=`make -V $1`
+		if [ -z "${value}" ]; then
+			warn "Can't read variable '$1' from Makefile in '$PWD'.  '0' substitued."
+			value="0"
+		fi
+	fi
 	echo $value
 }
 
