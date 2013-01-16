@@ -792,7 +792,7 @@ run_portshaker_command()
 							rm -rf ${RM_FLAGS} "${_target}/${_port}" || err 1 "Cannot remove obsolete port ${_port}."
 						fi
 					else
-						warn "${_port} referenced in ${_portsdir}/MOVED does not exist."
+						debug "${_port} referenced in ${_portsdir}/MOVED does not exist."
 					fi
 					if [ ${_pretend} -eq 0 ]; then
 						echo "${_line}" >> "${_target}/MOVED"
