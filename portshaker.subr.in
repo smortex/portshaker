@@ -807,6 +807,20 @@ run_portshaker_command()
 				awk -f "@@SHAREDIR@@/portshaker/merge-updating.awk" -v in1="${_target}/UPDATING.orig" -v in2="${_portsdir}/UPDATING" -v out="${_target}/UPDATING"
 				rm ${RM_FLAGS} "${_target}/UPDATING.orig"
 			fi
+
+			# Merge UIDs GIDs
+			if [ -f "${_portsdir}/UIDs" -a ${_pretend} -eq 0 ]; then
+				info "Merging UIDs from ${name}."
+				mv "${_target}/UIDs" "${_target}/UIDs.orig"
+				cat "${_portsdir}/UIDs" "${_target}/UIDs.orig" | sort -nut: -k3 > "${_target}/UIDs"
+				rm "${_target}/UIDs.orig"
+			fi
+			if [ -f "${_portsdir}/GIDs" -a ${_pretend} -eq 0 ]; then
+				info "Merging GIDs from ${name}."
+				mv "${_target}/GIDs" "${_target}/GIDs.orig"
+				cat "${_portsdir}/GIDs" "${_target}/GIDs.orig" | sort -nut: -k3 > "${_target}/GIDs"
+				rm "${_target}/GIDs.orig"
+			fi
 			;;
 		update)
 			info "Updating '${name}' source ports tree with method '${method}'."
