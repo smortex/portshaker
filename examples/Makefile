@@ -12,6 +12,9 @@ main_merge_from+=	bsd_sharp
 .if defined (WITH_ENLIGHTENMENT)
 main_merge_from+=	enlightenment
 .endif
+.if defined (WITH_GECKO)
+main_merge_from+=	gecko
+.endif
 .if defined (WITH_HASKELL)
 main_merge_from+=	haskell
 .endif
@@ -58,7 +61,8 @@ all beforeinstall:
 	@echo " | sample portshaker.conf that fits your needs:                    |"
 	@echo " |   - WITH_BSDSHARP      -- Merge BSD# team's developement ports; |"
 	@echo " |   - WITH_ENLIGHTENMENT -- Merge E17 work in progress ports;     |"
-	@echo " |   - WITH_HASKELL       -- Merge the Haskell's ports;            |"
+	@echo " |   - WITH_GECKO         -- Merge Gecko's ports;                  |"
+	@echo " |   - WITH_HASKELL       -- Merge Haskell's ports;                |"
 	@echo " |   - WITH_MARCUSCOM     -- Merge GNOME team's development ports; |"
 	@echo " |   - WITH_TEXLIVE       -- Merge unofficial TeXLive ports.       |"
 	@echo " |   - WITH_XORG          -- Merge Xorg development ports.         |"

@@ -7,6 +7,7 @@ SCRIPTS=	bsd_sharp \
 		freebsd_texlive_releng \
 		freebsd_texlive_ports \
 		freebsd_texlive_ports_marcuscom \
+		gecko \
 		haskell \
 		marcuscom_ports \
 		marcuscom_ports_stable \
@@ -15,7 +16,7 @@ SCRIPTS=	bsd_sharp \
 		xorg
 
 .for script in ${SCRIPTS}
-${script}: ${script.in}
+${script}: ${script}.in
 	@echo "  GEN    ${script}"
 	@sed -e "s|@@PREFIX@@|${PREFIX}|" \
 		< ${script}.in \
