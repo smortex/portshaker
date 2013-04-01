@@ -39,6 +39,14 @@ VCS_ID_KEYWORDS="${VCS_ID_KEYWORDS:=FreeBSD Id MCom}"
 PB="${PB:=/usr/local/tinderbox}"
 TC="${TC:=${PB}/tc}"
 
+# Use pkg(8) if WITH_PKGNG is defined in make.conf
+if [ -f "/etc/make.conf" ]; then
+    case `make -f "/etc/make.conf" -V WITH_PKGNG` in
+    [Yy][Ee][Ss]|[Tt][Rr][Uu][Ee]|[Oo][Nn]|1)
+	PKG_VERSION="pkg version"
+    esac
+fi
+PKG_VERSION="${PKG_VERSION:=pkg_version}"
 
 # Convenient variables
 DIFF_IGNORE_FLAGS_MK="--ignore-matching-lines='\$\(FreeBSD\|Id\|MCom\)\$'"
@@ -252,11 +260,11 @@ newer_portversion()
 		return 0 # Always update
 	fi
 
-	case $(pkg_version -t ${old_version} ${new_version}) in
+	case $(${PKG_VERSION} -t ${old_version} ${new_version}) in
 	    '<') return 0;;
 	    '=') return 1;;
 	    '>') return 2;;
-	    *) err 1 "Unsupported pkg_version reply";;
+	    *) err 1 "Unsupported '${PKG_VERSION}' reply";;
 	esac
 }
 
