@@ -3,10 +3,7 @@
 
 . @@PREFIX@@/share/portshaker/portshaker.subr
 
-method="cvs"
-cvs_root=":pserver:anonymous:anoncvs@creme-brulee.marcuscom.com:/space/cvs/marcuscom-cvs"
-cvs_module="ports-stable"
-
-CVS_FLAGS="-q -z3"
+method="svn"
+svn_checkout_path="svn://creme-brulee.marcuscom.com/ports-stable/trunk"
 
 run_portshaker_command $*

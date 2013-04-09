@@ -3,11 +3,8 @@
 
 . @@PREFIX@@/share/portshaker/portshaker.subr
 
-method="cvs"
-cvs_root=":pserver:anonymous:anoncvs@creme-brulee.marcuscom.com:/space/cvs/marcuscom-cvs"
-cvs_module="ports"
-
-CVS_FLAGS="-q -z3"
+method="svn"
+svn_checkout_path="svn://creme-brulee.marcuscom.com/ports/trunk"
 
 marcuscom_ports_postmerge_to()
 {
