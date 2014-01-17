@@ -54,8 +54,13 @@ all beforeinstall:
 	@echo " \`-----------------------------------------------------------------'"
 	@false
 .endif
-.if ! defined (WITH_BSDSHARP) && ! defined (WITH_MARCUSCOM) && \
-    ! defined (WITH_TEXLIVE) && ! defined (WITH_HASKELL)
+.if ! defined (WITH_BSDSHARP) && \
+    ! defined (WITH_ENLIGHTENMENT) && \
+    ! defined (WITH_GECKO) && \
+    ! defined (WITH_HASKELL) && \
+    ! defined (WITH_MARCUSCOM) && \
+    ! defined (WITH_TEXLIVE) && \
+    ! defined (WITH_XORG)
 	@echo " ,----------------------------( Error )----------------------------."
 	@echo " | You have to define at least one of the following to generate a  |"
 	@echo " | sample portshaker.conf that fits your needs:                    |"
