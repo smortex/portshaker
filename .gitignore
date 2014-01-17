@@ -1,0 +1,28 @@
+# Ignore generated scripts
+portshaker.sh
+portshaker.subr
+
+# Ignore generated man pages
+*.[58]
+
+# Ignore tarballs
+portshaker-*.tar.gz
+
+# Ignore all but example generated files
+examples/portshaker.conf
+examples/portshaker.d/bsd_sharp
+examples/portshaker.d/bsd_sharp_releng_2_0
+examples/portshaker.d/bsd_sharp_releng_2_2
+examples/portshaker.d/bsd_sharp_releng_2_4
+examples/portshaker.d/enlightenment
+examples/portshaker.d/freebsd_texlive
+examples/portshaker.d/freebsd_texlive_ports
+examples/portshaker.d/freebsd_texlive_ports_marcuscom
+examples/portshaker.d/freebsd_texlive_releng
+examples/portshaker.d/gecko
+examples/portshaker.d/haskell
+examples/portshaker.d/marcuscom_ports
+examples/portshaker.d/marcuscom_ports_stable
+examples/portshaker.d/ports
+examples/portshaker.d/redports
+examples/portshaker.d/xorg
