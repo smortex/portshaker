@@ -47,6 +47,7 @@ elif [ -f "/etc/make.conf" ]; then
     case `make -f "/etc/make.conf" -V WITH_PKGNG` in
     [Yy][Ee][Ss]|[Tt][Rr][Uu][Ee]|[Oo][Nn]|1)
 	PKG_VERSION="pkg version"
+	;;
     esac
 fi
 PKG_VERSION="${PKG_VERSION:=pkg_version}"
