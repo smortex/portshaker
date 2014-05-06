@@ -39,8 +39,11 @@ VCS_ID_KEYWORDS="${VCS_ID_KEYWORDS:=FreeBSD Id MCom}"
 PB="${PB:=/usr/local/tinderbox}"
 TC="${TC:=${PB}/tc}"
 
-# Use pkg(8) if WITH_PKGNG is defined in make.conf
-if [ -f "/etc/make.conf" ]; then
+# Use pkg(8) if the old pkg_* tools are not found or if WITH_PKGNG defined in
+# make.conf
+if [ -z `/usr/bin/whereis -q -b pkg_version` ]; then
+    PKG_VERSION="pkg version"
+elif [ -f "/etc/make.conf" ]; then
     case `make -f "/etc/make.conf" -V WITH_PKGNG` in
     [Yy][Ee][Ss]|[Tt][Rr][Uu][Ee]|[Oo][Nn]|1)
 	PKG_VERSION="pkg version"
