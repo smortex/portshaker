@@ -20,7 +20,7 @@ source_ports_trees()
 	for _ports_tree in ${ports_trees}; do
 		_merge_from=`eval echo \\\$${_ports_tree}_merge_from`
 		for _from in ${_merge_from}; do
-			echo ${_from} | sed -e 's/!$//'
+			echo ${_from} | sed -e 's/[!+]$//'
 		done
 	done | sort | uniq
 }
@@ -159,6 +159,15 @@ if [ "${_do_merge}" -eq 1 ]; then
 		_master=""
 
 		for _source in ${_merge_from}; do
+			# Do copy regardless of version
+			if [ "${_first}" -ne 1 -a "x${_source#${_source%?}}" = 'x+' ]; then
+				# Copy overlay port files regardless.
+				_source=${_source%?}
+				${config_dir}/portshaker.d/${_source} copy_to -t ${_target} || exit 1
+				continue
+			fi
+
+			# Do normal merge
 			_merge_flags=""
 			if [ "${_first}" -ne 1 -a "x${_source#${_source%?}}" = 'x!' ]; then
 				# Auto-install modified ports.

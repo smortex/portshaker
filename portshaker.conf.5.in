@@ -89,6 +89,17 @@ can be told to automatically install the updated ports without prompting the
 user by appending an exclamation mark after the
 .Ar source
 ports tree name.
+.Pp
+Alternatively, appending a plus sign after the
+.Ar source
+ports tree name will, regardless of version, install or replace matching files
+in the
+.Ar target
+port tree whilst preserving any pre-existing non matching port files. This is
+useful when the
+.Ar source
+ports tree contains an incomplete subset of files for instance only local
+patches.
 .It Va poudriere_dataset
 .Pq Vt string
 The ZFS filesystem
