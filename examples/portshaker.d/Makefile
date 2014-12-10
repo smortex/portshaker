@@ -8,6 +8,7 @@ SCRIPTS=	bsd_sharp \
 		freebsd_texlive_ports \
 		freebsd_texlive_ports_marcuscom \
 		gecko \
+		github \
 		haskell \
 		marcuscom_ports \
 		marcuscom_ports_stable \

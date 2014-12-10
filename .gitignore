@@ -20,6 +20,7 @@ examples/portshaker.d/freebsd_texlive_ports
 examples/portshaker.d/freebsd_texlive_ports_marcuscom
 examples/portshaker.d/freebsd_texlive_releng
 examples/portshaker.d/gecko
+examples/portshaker.d/github
 examples/portshaker.d/haskell
 examples/portshaker.d/marcuscom_ports
 examples/portshaker.d/marcuscom_ports_stable
