@@ -8,6 +8,11 @@ extra_info=":${username}"
 
 shift
 
+if [ "$1" != '--' ]; then
+	err 1 "Extra arguments"
+fi
+shift
+
 method="svn"
 svn_checkout_path="http://svn.redports.org/${username}"
 

@@ -4,13 +4,24 @@
 . @@PREFIX@@/share/portshaker/portshaker.subr
 
 username="$1"
-repo="$2"
-extra_info=":${username}:${repo}"
-
+project="$2"
+extra_info=":${username}:${project}"
 shift 2
 
+if [ "$1" != '--' ]; then
+	git_branch="$1"
+	extra_info="${extra_info}:${git_branch}"
+	shift
+fi
+
+if [ "$1" != '--' ]; then
+	err 1 "Extra arguments"
+fi
+shift
+
 method="git"
-git_clone_uri="https://github.com/${username}/${repo}"
+git_clone_uri="https://github.com/${username}/${project}"
+git_branch=${git_branch:=master}
 
 run_portshaker_command $*
 
