@@ -1,0 +1,16 @@
+#!/bin/sh
+# $Id$
+
+. @@PREFIX@@/share/portshaker/portshaker.subr
+
+username="$1"
+repo="$2"
+extra_info=":${username}:${repo}"
+
+shift 2
+
+method="git"
+git_clone_uri="https://github.com/${username}/${repo}"
+
+run_portshaker_command $*
+
