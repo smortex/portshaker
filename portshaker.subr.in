@@ -904,10 +904,7 @@ run_portshaker_command()
 				fi
 				if [ ! -d "${_portsdir}/.git" ]; then
 					debug "Running '${GIT} clone ${git_clone_uri} ${_portsdir}'."
-					git_flags=""
-					if [ -n "${git_branch}" ]; then
-						git_flags="-b ${git_branch}"
-					fi
+					git_clone_flags="--depth 1 --branch ${git_branch:=master}"
 					${GIT} clone "${git_clone_uri}" ${git_clone_flags} "${_portsdir}"
 					if [ $? -ne 0 ]; then
 						err 1 "git clone failed."
