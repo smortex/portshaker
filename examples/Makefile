@@ -22,7 +22,7 @@ main_merge_from+=	haskell
 main_merge_from+=	marcuscom_ports
 .endif
 .if defined (WITH_TEXLIVE)
-main_merge_from+=	freebsd_texlive freebsd_texlive_releng
+main_merge_from+=	github:smortex:freebsd-texlive github:smortex:freebsd-texlive:releng
 .endif
 .if defined (WITH_XORG)
 main_merge_from+=	xorg

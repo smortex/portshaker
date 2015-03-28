@@ -1,8 +1,4 @@
 SCRIPTS=	enlightenment \
-		freebsd_texlive \
-		freebsd_texlive_releng \
-		freebsd_texlive_ports \
-		freebsd_texlive_ports_marcuscom \
 		gecko \
 		github \
 		haskell \
