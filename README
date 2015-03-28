@@ -11,11 +11,6 @@ CONSEQUENCE, IF YOU HAVE LOCAL EDITS IN YOUR TARGET PORTS TREE, THEY WILL BE
 LOST (AND SO DO ANY OTHER FILE IN THE DIRECTORY, E.G. VCS CONTROL FILES).
 
 
-If you intend to test BSD#, a complete configuration that will work out of the
-box is available from the examples directory.  The previous warning apply, and
-this configuration target ports tree is /usr/ports.
-
-
 Portions of sources of this tools code have been stolen from the following
 files from a FreeBSD 7.0-STABLE box:
   - /etc/rc.subr

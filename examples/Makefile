@@ -7,7 +7,7 @@ SUBDIR=		portshaker.d
 
 main_merge_from=	ports
 .if defined (WITH_BSDSHARP)
-main_merge_from+=	bsd_sharp
+main_merge_from+=	github:smortex:bsd-sharp
 .endif
 .if defined (WITH_ENLIGHTENMENT)
 main_merge_from+=	enlightenment
@@ -31,12 +31,6 @@ main_merge_from+=	xorg
 portshaker.conf: portshaker.conf.part
 	@echo "  GEN    portshaker.conf"
 	@cp portshaker.conf.part portshaker.conf
-.if defined (WITH_BSDSHARP)
-	@echo "# For stable version of mono, replace 'bsd_sharp' with:" >> portshaker.conf
-	@echo "#   - 'bsd_sharp_releng_2_0' for mono 2.0.x;" >> portshaker.conf
-	@echo "#   - 'bsd_sharp_releng_2_2' for mono 2.2.x;" >> portshaker.conf
-	@echo "#   - and so on..." >> portshaker.conf
-.endif
 	@echo "main_merge_from=\"${main_merge_from}\"" >> portshaker.conf
 
 clean:

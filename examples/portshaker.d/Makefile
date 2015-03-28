@@ -1,8 +1,4 @@
-SCRIPTS=	bsd_sharp \
-		bsd_sharp_releng_2_0 \
-		bsd_sharp_releng_2_2 \
-		bsd_sharp_releng_2_4 \
-		enlightenment \
+SCRIPTS=	enlightenment \
 		freebsd_texlive \
 		freebsd_texlive_releng \
 		freebsd_texlive_ports \
