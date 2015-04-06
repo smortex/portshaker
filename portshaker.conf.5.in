@@ -111,6 +111,22 @@ The directory where
 .Xr poudriere 8
 ports directory are mounted, usually
 .Ar @@PREFIX@@/poudriere/ports .
+.It Va source_zfs_compression
+.Pq Vt string
+ZFS compression to use when creating a
+.Ar source
+ports tree (require
+.Ar use_zfs
+to be set).  Defaults to
+.Ar lz4 .
+.It Va target_zfs_compression
+.Pq Vt string
+ZFS compression to use when creating a
+.Ar target
+ports tree (require
+.Ar use_zfs
+to be set).  Defaults to
+.Ar off .
 .It Va use_zfs
 .Pq Vt bool
 Whether to use ZFS for cloning the first

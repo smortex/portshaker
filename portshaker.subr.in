@@ -72,6 +72,9 @@ case $use_zfs in
 	;;
 esac
 
+source_zfs_compression=${source_zfs_compression:=lz4}
+target_zfs_compression=${target_zfs_compression:=off}
+
 #
 #	functions
 #	---------
@@ -468,6 +471,10 @@ run_portshaker_command()
 					if [ $_pretend -eq 0 ]; then
 						zfs set mountpoint="${_target}" "${_target_dataset}" || err 1 "Can't set '${_target_dataset}' mountpoint to '${_target}'."
 					fi
+					debug "Running 'zfs set compression="${target_zfs_compression}" "${_target_dataset}"'."
+					if [ $_pretend -eq 0 ]; then
+						zfs set compression=${target_zfs_compression} ${_target_dataset} || warn "Cannot set ${target_zfs_compression} compression on the ${_target_dataset} ZFS filesystem."
+					fi
 					if [ -n "${_poudriere_tree}" ]; then
 						debug "Setting poudriere ports properties on '${_target_dataset}'"
 						if [ $_pretend -eq 0 ]; then
@@ -847,7 +854,7 @@ run_portshaker_command()
 				    fi
 				    _source_dataset="${_parent_dataset}/${name}"
 				    zfs create "${_source_dataset}" || err 1 "Cannot create the ${_source_dataset} ZFS filesystem."
-				    zfs set compression=gzip ${_source_dataset} || warn "Cannot set gzip compression on the ${_source_dataset} ZFS filesystem."
+				    zfs set compression=${source_zfs_compression} ${_source_dataset} || warn "Cannot set ${source_zfs_compression} compression on the ${_source_dataset} ZFS filesystem."
 				else
 				    mkdir -p "${_portsdir}" || err 1 "Cannot create the '${_portsdir}' directory."
 				fi
