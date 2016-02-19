@@ -33,6 +33,8 @@ RSYNC=${RSYNC:=rsync}
 RSYNC_FLAGS=""
 SVN="${SVN:=svn}"
 #SVN_FLAGS=""
+SVNADMIN="${SVNADMIN:=svnadmin}"
+#SVNADMIN_FLAGS=""
 VCS_ID_KEYWORDS="${VCS_ID_KEYWORDS:=FreeBSD Id MCom}"
 
 # Tinderbox related variables
@@ -1001,6 +1003,49 @@ run_portshaker_command()
 					if [ $? -ne 0 ]; then
 						err 1 "Subversion update failed."
 					fi
+				fi
+				;;
+			svn+subtrees)
+				if [ -z "${svn_checkout_path}" ]; then
+					err 1 "\$svn_checkout_path is not defined."
+				fi
+				cd "${_portsdir}"
+				if [ ! -d "${_portsdir}/.svn" ]; then
+					debug "Running '${SVNADMIN} ${SVNADMIN_FLAGS} create \"${_portsdir}/.repos\"'."
+					${SVNADMIN} ${SVNADMIN_FLAGS} create "${_portsdir}/.repos"
+					if [ $? -ne 0 ]; then
+						err 1 "Creating subversion repository failed."
+					fi
+					debug "Running '${SVN} ${SVN_FLAGS} checkout \"file://${_portsdir}/.repos\" \"${_portsdir}\"'."
+					${SVN} ${SVN_FLAGS} checkout "file://${_portsdir}/.repos" "${_portsdir}"
+					if [ $? -ne 0 ]; then
+						err 1 "Subversion update failed."
+					fi
+					debug "Moving \"${_portsdir}/.repos\" to \"${_portsdir}/.svn/.repos\"."
+					mv "${_portsdir}/.repos" "${_portsdir}/.svn"
+					debug "Running '${SVN} ${SVN_FLAGS} relocate \"file://${_portsdir}/.repos\" \"file://${_portsdir}/.svn/.repos\"'."
+					${SVN} ${SVN_FLAGS} relocate "file://${_portsdir}/.repos" "file://${_portsdir}/.svn/.repos"
+					if [ $? -ne 0 ]; then
+						err 1 "Subversion relocate failed."
+					fi
+				fi
+
+				debug "Running '${SVN} ${SVN_FLAGS} propset svn:externals'."
+				for _part in ${svn_checkout_subtrees}; do
+					echo ${svn_checkout_path}/${_part} $(echo ${_part} | grep -oE '^[^@]+')
+				done | ${SVN} ${SVN_FLAGS} propset svn:externals -F - .
+				if [ $? -ne 0 ]; then
+					err 1 "Subversion propset failed."
+				fi
+				debug "Running '${SVN} ${SVN_FLAGS} commit'."
+				${SVN} ${SVN_FLAGS} commit -m "portshaker: change svn:externals"
+				if [ $? -ne 0 ]; then
+					err 1 "Subversion commit failed."
+				fi
+				debug "Running '${SVN} ${SVN_FLAGS} update'."
+				${SVN} ${SVN_FLAGS} update
+				if [ $? -ne 0 ]; then
+					err 1 "Subversion update failed."
 				fi
 				;;
 			*)

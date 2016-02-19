@@ -49,9 +49,10 @@ Update method. Should be one of
 .Va git ,
 .Va hg
 (mercurial),
-.Va rsync
+.Va rsync ,
+.Va svn ,
 or
-.Va svn .
+.Va svn+subtrees .
 .It Ar csup_supfile
 .Pq Vt str
 supfile to provide to
@@ -91,7 +92,17 @@ when
 .It Ar svn_checkout_path
 .Pq Vt str
 URI to checkout the ports tree from when
-.Dq Ar method Ns Li = Ns Vt svn .
+.Dq Ar method Ns Li = Ns Vt svn
+or
+.Dq Ar method Ns Li = Ns Vt svn+subtrees .
+.It Ar svn_checkout_subtrees
+.Pq Vt str
+Whitespace separated list of subdirectories
+.Ar path[@rev]
+beneath the
+.Ar svn_checkout_path
+which will be checked out when
+.Dq Ar method Ns Li = Ns Vt svn+subtrees .
 .El
 .Ss Special consideration when Dq Ar method Ns Li = Ns Vt csup
 When updating a
@@ -137,6 +148,23 @@ shell script containing:
 \&. @@PREFIX@@/share/portshaker/portshaker.subr
 method="svn"
 svn_checkout_path="http://bsd-sharp.googlecode.com/svn/trunk/"
+run_portshaker_command $*
+.Ed
+.Pp
+If you want only a subset of ports from the (huge) FreeBSD tree as a
+.Ar source
+ports tree (probably to merge with some other tree), create a
+.Ar @@PREFIX@@/etc/portshaker.d/freebsd_subset
+shell script containing:
+.Bd -literal
+#!/bin/sh
+\&. @@PREFIX@@/share/portshaker/portshaker.subr
+method="svn+subtrees"
+svn_checkout_path="svn://svn.freebsd.org/ports/head"
+svn_checkout_subtrees="
+  emulators/mame
+  net/samba34@319916
+"
 run_portshaker_command $*
 .Ed
 .Pp
