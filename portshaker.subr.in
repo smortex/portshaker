@@ -601,6 +601,20 @@ run_portshaker_command()
 
 					debug "Processing ${_category}/${_port}."
 
+					# If this is a new category was merged in, create a stub Makefile for it if necessary
+					if [ ! -f "${_target}/${_category}/Makefile" ]; then
+						debug "creating stub Makefile for category ${_category}."
+						{
+							echo '# $FreeBSD'
+							echo '#'
+							echo ""
+							echo "    COMMENT = ${_category} ports"
+							echo ""
+							echo ""
+							echo ".include <bsd.port.subdir.mk>"
+						} > "${_target}/${_category}/Makefile"
+					fi
+
 					if [ ! -f "${_port}/Makefile" ]; then
 						warn "${_category}/${_port}: No Makefile in this directory!"
 						continue
