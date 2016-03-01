@@ -592,6 +592,12 @@ run_portshaker_command()
 					continue
 				fi
 				cd ${_category} || exit 1
+
+				if [ ! -d "${_target}/${_category}" ]; then
+					debug "creating new category: ${_category}"
+					mkdir "${_target}/${_category}" || exit 1
+				fi
+
 				for _port in `ls`; do
 					if [ ${_port} = "CVS" -o ${_port} = ".svn" ]; then
 						continue
@@ -601,7 +607,8 @@ run_portshaker_command()
 
 					debug "Processing ${_category}/${_port}."
 
-					# If this is a new category was merged in, create a stub Makefile for it if necessary
+					# if there is no Makefile in this category (its a new
+					# category), then create a stub Makefile
 					if [ ! -f "${_target}/${_category}/Makefile" ]; then
 						debug "creating stub Makefile for category ${_category}."
 						{
