@@ -1,0 +1,18 @@
+#!/bin/sh
+# $Id$
+
+. @@PREFIX@@/share/portshaker/portshaker.subr
+
+if [ "$1" != '--' ]; then
+	err 1 "Extra arguments"
+fi
+shift
+
+method="svn"
+svn_checkout_path="svn://svn.freebsd.org/ports/head"
+svn_checkout_subtrees="
+  emulators/mame
+  net/samba34@319916
+"
+
+run_portshaker_command $*
