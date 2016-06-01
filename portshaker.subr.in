@@ -178,7 +178,7 @@ portshaker_usage()
 # 	$1 - Name of the variable to read.
 read_makefile_value()
 {
-	value=`awk 'BEGIN { r = ""} /^'$1'\??=/ { split($0, a, /=[[:space:]]*/); r = a[2]; } END { print r }  ' Makefile`
+	value=`awk 'BEGIN { r = ""} /^'$1'\??=/ { split($0, a, /=[[:space:]]*/); r = a[2]; split(r, b, /[[:space:]]*#/); r = b[1] } END { print r }  ' Makefile`
 	if [ -z "${value}" -o "${value%${value#?}}" = '$' ]; then
 		debug "Can't read variable '$1' from Makefile in '$PWD'.  Falling back to make(1)."
 		value=`make -V $1`
