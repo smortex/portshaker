@@ -594,6 +594,12 @@ run_portshaker_command()
 					continue
 				fi
 				cd ${_category} || exit 1
+
+				if [ ! -d "${_target}/${_category}" ]; then
+					debug "creating new category: ${_category}"
+					mkdir "${_target}/${_category}" || exit 1
+				fi
+
 				for _port in `ls`; do
 					if [ ${_port} = "CVS" -o ${_port} = ".svn" ]; then
 						continue
@@ -602,6 +608,21 @@ run_portshaker_command()
 					_version_going_backward=0
 
 					debug "Processing ${_category}/${_port}."
+
+					# if there is no Makefile in this category (its a new
+					# category), then create a stub Makefile
+					if [ ! -f "${_target}/${_category}/Makefile" ]; then
+						debug "creating stub Makefile for category ${_category}."
+						{
+							echo '# $FreeBSD'
+							echo '#'
+							echo ""
+							echo "    COMMENT = ${_category} ports"
+							echo ""
+							echo ""
+							echo ".include <bsd.port.subdir.mk>"
+						} > "${_target}/${_category}/Makefile"
+					fi
 
 					if [ ! -f "${_port}/Makefile" ]; then
 						warn "${_category}/${_port}: No Makefile in this directory!"
