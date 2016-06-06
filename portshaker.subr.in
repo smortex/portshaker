@@ -918,6 +918,17 @@ run_portshaker_command()
 					if [ $? -ne 0 ]; then
 						err 1 "git clone failed."
 					fi
+					if [ -n "${git_submodules}" ]; then 
+                                                cd "${_portsdir}"
+                                                ${GIT} submodule init
+                                                if [ $? -ne 0 ]; then
+                                                        err 1 "git submodule init failed."
+                                                fi
+                                                ${GIT} submodule update --recursive
+                                                if [ $? -ne 0 ]; then
+                                                        err 1 "git submodule update failed."
+                                                fi
+                                        fi
 				else
 					cd "${_portsdir}"
 					debug "Running '${GIT} pull'."
