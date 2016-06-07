@@ -928,6 +928,10 @@ run_portshaker_command()
                                                 if [ $? -ne 0 ]; then
                                                         err 1 "git submodule update failed."
                                                 fi
+						${GIT} submodule foreach --recursive git checkout ${git_submodules_branch}
+                                                if [ $? -ne 0 ]; then
+                                                        err 1 "git submodule checkout failed."
+                                                fi
                                         fi
 				else
 					cd "${_portsdir}"
