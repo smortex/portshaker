@@ -557,7 +557,7 @@ run_portshaker_command()
 					err 1 "'${_target}/Mk' missing! copy / clone repository before merging."
 				fi
 				cd "${_portsdir}/Mk" || exit 1
-				for _mk in `ls`; do
+				for _mk in `find . -type f | sed s:"./"::`; do
 					if [ ${_mk} = "CVS" -o ${_mk} = ".svn" ]; then
 						continue
 					fi
