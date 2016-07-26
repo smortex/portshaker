@@ -594,6 +594,10 @@ run_portshaker_command()
 					continue
 				fi
 				cd ${_category} || exit 1
+				if [ ! -d "${_target}/${_category}" ]; then
+					debug "Creating category '${_category}'."
+					mkdir "${_target}/${_category}" || exit 1
++				fi
 				for _port in `ls`; do
 					if [ ${_port} = "CVS" -o ${_port} = ".svn" ]; then
 						continue
