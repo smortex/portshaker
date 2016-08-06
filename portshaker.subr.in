@@ -930,13 +930,15 @@ run_portshaker_command()
 					fi
 				else
 					cd "${_portsdir}"
-					debug "Running '${GIT} pull'."
-					${GIT} pull
+					debug "Running '${GIT} fetch'."
+					${GIT} fetch
 					if [ $? -ne 0 ]; then
-						err 1 "git pull failed."
+						err 1 "git fetch failed."
 					fi
-					if [ -n "${git_branch}" ]; then
-						${GIT} checkout "${git_branch}"
+					debug "Running '${GIT} reset --hard origin/${git_branch:=master}'"
+					${GIT} reset --hard origin/${git_branch:=master}
+					if [ $? -ne 0 ]; then
+						err 1 "git reset --hard origin/${git_branch:=master}."
 					fi
 				fi
 				;;
