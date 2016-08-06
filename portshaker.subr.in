@@ -352,6 +352,12 @@ run_portshaker_command()
 
 	debug "${_portshaker_arg} ${_portshaker_extra_args}"
 
+	# if ${extra_info} contains `:`, the port infrastructure will produce
+	# warnings when attempting to launch make(1) from the source directory
+	# (required when parsing e.g. PORTVERSION fails).  Workaround this by
+	# substituting the `:` "reserved" char with an inocent one.
+	extra_info=`echo ${extra_info} | sed 's/:/_/g'`
+
 	name="`basename $0`${extra_info}"
 
 	_portsdir="${mirror_base_dir}/${name}"
