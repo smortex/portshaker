@@ -1,4 +1,4 @@
-# vim:set syntax=sh:
+# vim:set syntax=sh noet ts=8 sw=8:
 # $Id$
 #
 # portshaker.subr
@@ -44,13 +44,13 @@ TC="${TC:=${PB}/tc}"
 # Use pkg(8) if the old pkg_* tools are not found or if WITH_PKGNG defined in
 # make.conf
 if [ -z `/usr/bin/whereis -q -b pkg_version` ]; then
-    PKG_VERSION="pkg version"
-elif [ -f "/etc/make.conf" ]; then
-    case `make -f "/etc/make.conf" -V WITH_PKGNG` in
-    [Yy][Ee][Ss]|[Tt][Rr][Uu][Ee]|[Oo][Nn]|1)
 	PKG_VERSION="pkg version"
-	;;
-    esac
+elif [ -f "/etc/make.conf" ]; then
+	case `make -f "/etc/make.conf" -V WITH_PKGNG` in
+	[Yy][Ee][Ss]|[Tt][Rr][Uu][Ee]|[Oo][Nn]|1)
+		PKG_VERSION="pkg version"
+		;;
+	esac
 fi
 PKG_VERSION="${PKG_VERSION:=pkg_version}"
 
@@ -270,10 +270,10 @@ newer_portversion()
 	fi
 
 	case $(${PKG_VERSION} -t ${old_version} ${new_version}) in
-	    '<') return 0;;
-	    '=') return 1;;
-	    '>') return 2;;
-	    *) err 1 "Unsupported '${PKG_VERSION}' reply";;
+		'<') return 0;;
+		'=') return 1;;
+		'>') return 2;;
+		*) err 1 "Unsupported '${PKG_VERSION}' reply";;
 	esac
 }
 
@@ -425,9 +425,9 @@ run_portshaker_command()
 			fi
 			if [ $_use_zfs -eq 1 ]; then
 				if [ -d "${_target}/.zfs" ]; then
-				    _target_dataset=`zfs list -H | awk "\\\$5 == \"${_target}\" {print \\\$1}"`
+					_target_dataset=`zfs list -H | awk "\\\$5 == \"${_target}\" {print \\\$1}"`
 				elif [ -d "${_target}/ports/.zfs" ]; then
-				    _target_dataset=`zfs list -H | awk "\\\$5 == \"${_target}/ports\" {print \\\$1}"`
+					_target_dataset=`zfs list -H | awk "\\\$5 == \"${_target}/ports\" {print \\\$1}"`
 				fi
 				if [ -z "${_source_dataset}" ]; then
 					warn "'${_portsdir}' shall be an existing ZFS filesystem when \$use_zfs=yes. Falling back to rsync(1)."
@@ -849,16 +849,16 @@ run_portshaker_command()
 			if [ ! -d "${_portsdir}" ] && [ ! "${method}" = "cvs" ]; then
 				debug "Creating the '${_portsdir}' directory."
 				if [ $_use_zfs -eq 1 ]; then
-				    _parent=`dirname "${_portsdir}"`
-				    _parent_dataset=`zfs list -H | awk "\\\$5 == \"${_parent}\" {print \\\$1}"`
-				    if [ -z "${_parent_dataset}" ]; then
-					err 1 "The ${_parent} directory shall be a ZFS filesystem when \$use_zfs=yes."
-				    fi
-				    _source_dataset="${_parent_dataset}/${name}"
-				    zfs create "${_source_dataset}" || err 1 "Cannot create the ${_source_dataset} ZFS filesystem."
-				    zfs set compression=${source_zfs_compression} ${_source_dataset} || warn "Cannot set ${source_zfs_compression} compression on the ${_source_dataset} ZFS filesystem."
+					_parent=`dirname "${_portsdir}"`
+					_parent_dataset=`zfs list -H | awk "\\\$5 == \"${_parent}\" {print \\\$1}"`
+					if [ -z "${_parent_dataset}" ]; then
+						err 1 "The ${_parent} directory shall be a ZFS filesystem when \$use_zfs=yes."
+					fi
+					_source_dataset="${_parent_dataset}/${name}"
+					zfs create "${_source_dataset}" || err 1 "Cannot create the ${_source_dataset} ZFS filesystem."
+					zfs set compression=${source_zfs_compression} ${_source_dataset} || warn "Cannot set ${source_zfs_compression} compression on the ${_source_dataset} ZFS filesystem."
 				else
-				    mkdir -p "${_portsdir}" || err 1 "Cannot create the '${_portsdir}' directory."
+					mkdir -p "${_portsdir}" || err 1 "Cannot create the '${_portsdir}' directory."
 				fi
 			fi
 			if [ ! -w "${_portsdir}" ] && [ ! "${method}" = "cvs" ]; then
