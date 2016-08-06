@@ -30,8 +30,8 @@ CLEANFILES+=	portshaker.conf.5 portshaker.d.5 portshaker.8 \
 		> ${.TARGET}
 
 beforeinstall:
-	if [ ! -d "${SHAREDIR}/portshaker" ]; then mkdir -p "${SHAREDIR}/portshaker"; fi
-	if [ ! -d "${ETCDIR}/portshaker.d" ]; then mkdir -p "${ETCDIR}/portshaker.d"; fi
+	if [ ! -d "${DESTDIR}${SHAREDIR}/portshaker" ]; then mkdir -p "${DESTDIR}${SHAREDIR}/portshaker"; fi
+	if [ ! -d "${DESTDIR}${ETCDIR}/portshaker.d" ]; then mkdir -p "${DESTDIR}${ETCDIR}/portshaker.d"; fi
 
 tarball:
 	git archive -o ${TARBALL} v${VERSION}
