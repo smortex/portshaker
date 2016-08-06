@@ -915,24 +915,50 @@ run_portshaker_command()
 				if [ -z "${git_clone_uri}" ]; then
 					err 1 "\$git_clone_uri is not defined."
 				fi
-				if [ ! -d "${_portsdir}/.git" ]; then
-					debug "Running '${GIT} clone ${git_clone_uri} ${_portsdir}'."
-					git_clone_flags="--depth 1 --branch ${git_branch:=master}"
-					${GIT} clone "${git_clone_uri}" ${git_clone_flags} "${_portsdir}"
-					if [ $? -ne 0 ]; then
-						err 1 "git clone failed."
-					fi
-				else
-					cd "${_portsdir}"
-					debug "Running '${GIT} pull'."
-					${GIT} pull
-					if [ $? -ne 0 ]; then
-						err 1 "git pull failed."
-					fi
-					if [ -n "${git_branch}" ]; then
-						${GIT} checkout "${git_branch}"
-					fi
-				fi
+                                if [ ! -d "${_portsdir}/.git" ]; then
+                                        debug "Running '${GIT} clone ${git_clone_uri} ${_portsdir}'."
+                                        git_flags=""
+                                        if [ -n "${git_branch}" ]; then
+                                                git_flags="-b ${git_branch}"
+                                        fi
+                                        ${GIT} clone "${git_clone_uri}" ${git_clone_flags} "${_portsdir}"
+                                        if [ $? -ne 0 ]; then
+                                                err 1 "git clone failed."
+                                        fi
+                                        if [ -n "${git_submodules}" ]; then
+                                                cd "${_portsdir}"
+                                                ${GIT} submodule init
+                                                if [ $? -ne 0 ]; then
+                                                        err 1 "git submodule init failed."
+                                                fi
+                                                ${GIT} submodule update --recursive
+                                                if [ $? -ne 0 ]; then
+                                                        err 1 "git submodule update failed."
+                                                fi
+                                                if [ -n "${git_submodules_branch}" ]; then
+                                                        ${GIT} submodule foreach --recursive git checkout ${git_submodules_branch}
+                                                        if [ $? -ne 0 ]; then  
+                                                                err 1 "git submodule checkout failed."
+                                                        fi
+                                                fi
+                                        fi
+                                else
+                                        cd "${_portsdir}"
+                                        debug "Running '${GIT} pull'."
+                                        ${GIT} pull
+                                        if [ $? -ne 0 ]; then
+                                                err 1 "git pull failed."
+                                        fi
+                                        if [ -n "${git_branch}" ]; then
+                                                ${GIT} checkout "${git_branch}"
+                                        fi
+                                        if [ -n "${git_submodules}" ]; then
+                                                ${GIT} submodule foreach --recursive git pull
+                                                if [ $? -ne 0 ]; then
+                                                        err 1 "git submodule pull failed."
+                                                fi
+                                        fi
+                                fi
 				;;
 			hg)
 				if [ -z "${hg_clone_uri}" ]; then
