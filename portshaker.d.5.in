@@ -44,7 +44,7 @@ The script is in charge of consuming any argument up to (and including) the firs
 The following variable are available to configure how the
 .Ar source
 ports tree has to be fetched:
-.Bl -tag
+.Bl -tag -width svn_checkout_subtrees
 .It Ar method
 .Pq Vt str
 Update method. Should be one of
