@@ -74,6 +74,15 @@ case $use_zfs in
 	;;
 esac
 
+_fail_on_conflict=0
+fail_on_conflict=${fail_on_conflict:=0}
+
+case $fail_on_conflict in
+[Yy][Ee][Ss]|[Tt][Rr][Uu][Ee]|[Oo][Nn]|1)
+        _fail_on_conflict=1
+        ;;
+esac
+
 source_zfs_compression=${source_zfs_compression:=lz4}
 target_zfs_compression=${target_zfs_compression:=off}
 
@@ -753,6 +762,11 @@ run_portshaker_command()
 											echo "The target ports tree (${_target}) already have the version of ${_category}/${_port} provided by ${name}."
 											echo "However, the following file(s) has been touched:${_touched_files}."
 											echo "An update may be required."
+
+                                                                                        if [ "${_fail_on_conflict}" -eq 1 ]; then
+                                                                                                exit 1
+                                                                                        fi
+
 											echo -n "(diff|install|continue) > "
 											read _r
 											;;
