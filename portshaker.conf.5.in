@@ -100,6 +100,9 @@ useful when the
 .Ar source
 ports tree contains an incomplete subset of files for instance only local
 patches.
+.It Va fail_on_conflict
+.Pq Vt bool
+Fail if a merge conflict is encountered.
 .It Va poudriere_dataset
 .Pq Vt string
 The ZFS filesystem
