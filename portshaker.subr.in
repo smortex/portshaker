@@ -11,7 +11,7 @@ _portshaker_subr_loaded="YES"
 verbose="0"
 
 if [ "${_portshaker_load_config}" != "no" ]; then
-	config_dir="@@ETCDIR@@"
+	config_dir="${portshaker_config_dir:=@@ETCDIR@@}"
 	. ${config_dir}/portshaker.conf
 fi
 
