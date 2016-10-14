@@ -144,7 +144,12 @@ options are provided.
 .Sh ENVIRONMENT
 The following environment variables affect the execution of
 .Nm :
-.Bl -tag -width portshaker_debug
+.Bl -tag -width portshaker_config_dir
+.It portshaker_config_dir
+If set, overrides the default configuration location
+.Pa @@PREFIX@@/etc .
+This is mostly usefull for running portshaker in a continuous integration
+environment.
 .It portshaker_info
 If set to
 .Dq YES
