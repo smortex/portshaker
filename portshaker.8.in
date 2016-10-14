@@ -39,7 +39,7 @@ can maintain any number of
 ports tree, it is particularly handy if you want to maintain ports trees in a tinderbox.
 .Pp
 The options are as follows:
-.Bl -tag -width indent
+.Bl -tag -width "-i target"
 .It Fl I
 Update all
 .Ar target
@@ -86,7 +86,6 @@ will try to detect inconsistencies and report
 .Tn conflicts .
 .Pp
 Such conflics can occur in two situations:
-.Pp
 .Bl -bullet
 .It
 Two
@@ -95,7 +94,7 @@ ports tree claim to provide the same version of a single port (they both have th
 .Ar PORTEPOCH ,
 .Ar PORTVERSION
 and
-.Ar PORTREVISION ) 
+.Ar PORTREVISION )
 but they do not provide the same files.
 .Pp
 In such a situation,
@@ -103,7 +102,7 @@ In such a situation,
 will switch to interactive mode and ask you what to do.
 .Pp
 In order to efectively fix the problem after the merge, you will have to either:
-.Bl -bullet -compact
+.Bl -bullet
 .It
 Remove the conflicting version of the port from its
 .Ar source
@@ -162,7 +161,7 @@ will output extra debugging information. This is equivalent to using the
 flag twice.
 .El
 .Sh FILES
-.Bl -tag -width @@PREFIX@@/etc/portshaker.conf -compact
+.Bl -tag -width @@PREFIX@@/etc/portshaker.conf
 .It Pa @@PREFIX@@/etc/portshaker.conf
 Default location of the configuration file containing descriptive information about
 .Nm
