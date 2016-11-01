@@ -942,12 +942,38 @@ run_portshaker_command()
 					if [ $? -ne 0 ]; then
 						err 1 "git clone failed."
 					fi
+					if [ -n "${git_submodules}" ]; then
+						cd "${_portsdir}"
+						${GIT} submodule init
+						if [ $? -ne 0 ]; then
+							err 1 "git submodule init failed."
+						fi
+						${GIT} submodule update --recursive
+						if [ $? -ne 0 ]; then
+							err 1 "git submodule update failed."
+						fi
+						if [ -n "${git_submodules_branch}" ]; then
+							${GIT} submodule foreach --recursive git checkout ${git_submodules_branch}
+							if [ $? -ne 0 ]; then
+								err 1 "git submodule checkout failed."
+							fi
+						fi
+					fi
 				else
 					cd "${_portsdir}"
 					debug "Running '${GIT} fetch'."
 					${GIT} fetch
 					if [ $? -ne 0 ]; then
 						err 1 "git fetch failed."
+					fi
+					if [ -n "${git_branch}" ]; then
+						${GIT} checkout "${git_branch}"
+					fi
+					if [ -n "${git_submodules}" ]; then
+						${GIT} submodule foreach --recursive git fetch
+						if [ $? -ne 0 ]; then
+							err 1 "git submodule fetch failed."
+						fi
 					fi
 					debug "Running '${GIT} reset --hard origin/${git_branch:=master}'"
 					${GIT} reset --hard origin/${git_branch:=master}

@@ -80,6 +80,14 @@ git URI to clone when
 .Pq Vt str
 branch to track when
 .Dq Ar method Ns Li = Ns Vt git .
+.It Ar git_submodules
+.Pq Vt str
+fetch submodules when
+.Dq Ar method Ns Li = Ns Vt git .
+.It Ar git_submodules_branch
+.Pq Vt str
+submodule branch to track when
+.Dq Ar method Ns Li = Ns Vt git .
 .It Ar hg_clone_uri
 .Pq Vt str
 mercurial URI to clone when
@@ -217,6 +225,25 @@ and
 ports tree in your
 .Ar portshaker.conf
 configuration file.
+.Pp
+To use git as the
+.Ar source
+ports tree using submodules, create a
+.Ar @@PREFIX@@/etc/portshaker.d/git_ports
+shell script containing:
+.Bd -literal
+#!/bin/sh
+\&. /usr/local/share/portshaker/portshaker.subr
+if [ "$1" != '--' ]; then
+	err 1 "Extra arguments"
+fi
+shift
+method="git"
+git_clone_uri="git@github.com:freebsd/freebsd-ports.git"
+git_branch="master"
+git_submodules="yes"
+git_submodules_branch="development"
+run_portshaker_command $*
 .Sh SEE ALSO
 .Xr csup 1 ,
 .Xr portshaker 8 ,
