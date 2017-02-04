@@ -36,7 +36,8 @@ As
 .Nm
 can maintain any number of
 .Ar target
-ports tree, it is particularly handy if you want to maintain ports trees in a tinderbox.
+ports tree, it is particularly handy if you want to use customized ports trees
+with tinderbox / poudriere.
 .Pp
 The options are as follows:
 .Bl -tag -width "-i target"
