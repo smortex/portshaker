@@ -586,8 +586,13 @@ run_portshaker_command()
 						fi
 						debug "Updating 'Mk/${_mk}'."
 						if [ ${_pretend} -eq 0 ]; then
-							if diff ${DIFF_FLAGS} ${DIFF_IGNORE_FLAGS_MK} "${mirror_base_dir}/${_master}/Mk/${_mk}" "${_mk}" | (cd ${_target}/Mk && patch ${PATCH_FLAGS}); then
-								touch "${_target}/Mk/.${_mk}-${name}-patched"
+							_patch=`diff ${DIFF_FLAGS} ${DIFF_IGNORE_FLAGS_MK} "${mirror_base_dir}/${_master}/Mk/${_mk}" "${_mk}"`
+							if [ -z "${_patch}" ]; then
+								debug "No patch required for {$_mk}"
+							elif echo "${_patch}" | (cd ${_target}/Mk && patch ${PATCH_FLAGS}); then
+								_mk_subdir="`dirname "${_mk}"`/"
+								_mk_file=`basename "${_mk}"`
+								touch "${_target}/Mk/${_mk_subdir}.${_mk_file}-${name}-patched"
 							else
 								err 1 "Unable to patch 'Mk/${_mk}'."
 							fi
