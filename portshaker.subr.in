@@ -1033,10 +1033,13 @@ run_portshaker_command()
 					err 1 "\$rsync_source_path is not defined."
 				fi
 				debug "Running '${RSYNC} ${RSYNC_FLAGS} ${RSYNC_ARGS} ${rsync_extra_args} ${rsync_source_path}/ ${_portsdir}/'."
+				set -f
 				${RSYNC} ${RSYNC_FLAGS} ${RSYNC_ARGS} ${rsync_extra_args} "${rsync_source_path}/" "${_portsdir}/"
 				if [ $? -ne 0 ]; then
+					set +f
 					err 1 "rsync update failed."
 				fi
+				set +f
 				;;
 			svn)
 				if [ -z "${svn_checkout_path}" ]; then
