@@ -617,10 +617,18 @@ run_portshaker_command()
 				cd ${_category} || exit 1
 				if [ ! -d "${_target}/${_category}" ]; then
 					debug "Creating category '${_category}'."
-					mkdir "${_target}/${_category}" || exit 1
+					if [ ${_pretend} -eq 0 ]; then
+						mkdir "${_target}/${_category}" || exit 1
+					fi
+					if [ -f ${_category}/Makefile ]; then
+						debug "Copying '${_category}/Makefile'."
+						if [ ${_pretend} -eq 0 ]; then
+							cp ${CP_FLAGS} "${_category}/Makefile" "${_target}/${_category}" || err 1 "Unable to copy '${_category}/Makefile'."
+						fi
+					fi
 				fi
 				for _port in `ls`; do
-					if [ ${_port} = "CVS" -o ${_port} = ".svn" ]; then
+					if [ ${_port} = "CVS" -o ${_port} = ".svn" -o ${_port} = "Makefile" ]; then
 						continue
 					fi
 					_copy_port=0
