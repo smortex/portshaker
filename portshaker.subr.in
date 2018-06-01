@@ -620,10 +620,10 @@ run_portshaker_command()
 					if [ ${_pretend} -eq 0 ]; then
 						mkdir "${_target}/${_category}" || exit 1
 					fi
-					if [ -f ${_category}/Makefile ]; then
+					if [ -f Makefile ]; then
 						debug "Copying '${_category}/Makefile'."
 						if [ ${_pretend} -eq 0 ]; then
-							cp ${CP_FLAGS} "${_category}/Makefile" "${_target}/${_category}" || err 1 "Unable to copy '${_category}/Makefile'."
+							cp ${CP_FLAGS} Makefile "${_target}/${_category}" || err 1 "Unable to copy '${_category}/Makefile'."
 						fi
 					fi
 				fi
