@@ -77,7 +77,7 @@ ports tree.
 .It Fl v
 Increase verbosity level.
 .El
-.Ss Handling conflics
+.Ss Handling conflicts
 When merging a
 .Ar target
 ports tree,
@@ -85,7 +85,7 @@ ports tree,
 will try to detect inconsistencies and report
 .Tn conflicts .
 .Pp
-Such conflics can occur in two situations:
+Such conflicts can occur in two situations:
 .Bl -bullet
 .It
 Two
@@ -101,7 +101,7 @@ In such a situation,
 .Xr portshaker 8
 will switch to interactive mode and ask you what to do.
 .Pp
-In order to efectively fix the problem after the merge, you will have to either:
+In order to effectively fix the problem after the merge, you will have to either:
 .Bl -bullet
 .It
 Remove the conflicting version of the port from its
@@ -148,7 +148,7 @@ The following environment variables affect the execution of
 .It portshaker_config_dir
 If set, overrides the default configuration location
 .Pa @@PREFIX@@/etc .
-This is mostly usefull for running portshaker in a continuous integration
+This is mostly useful for running portshaker in a continuous integration
 environment.
 .It portshaker_info
 If set to
@@ -185,7 +185,7 @@ ports tree update scripts.
 .Nm
 was originally designed to tinderbuild the development version of both mono-2.0 and gnome-2.24 together. Each project used its own merge script
 .Ao Xr mono-merge.sh 8 and Xr marcusmerge 8 Ac
-but using both at the same time leaded to conflicts.
+but using both at the same time led to conflicts.
 .Pp
 .Nm
 has so been developed as a general purpose solution to contributed ports tree maintenance.
