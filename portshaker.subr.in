@@ -607,6 +607,13 @@ run_portshaker_command()
 				done
 			fi
 
+			# To determine a port version, we sometimes need to run
+			# make.  Ensure ${PORTSDIR}/Mk can be used.  Since we
+			# have already merged the Mk directory, any local Mk
+			# files should be found where they are supposed to be
+			# found.
+			export PORTSDIR=${_target}
+
 			# Merge ports
 			cd "${_portsdir}" || exit 1
 			for _category in *; do
