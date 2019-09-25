@@ -609,7 +609,7 @@ run_portshaker_command()
 
 			# Merge ports
 			cd "${_portsdir}" || exit 1
-			for _category in `ls`; do
+			for _category in *; do
 				_regen_category_makefile=0
 				if [ ! -d ${_category} ] || [ ${_category} = "Mk" -o ${_category} = "CVS" -o ${_category} = ".svn" -o ${_category} = ".git" -o ${_category} = ".hg" -o ${_category} = "Tools" ]; then
 					continue
@@ -627,7 +627,7 @@ run_portshaker_command()
 						fi
 					fi
 				fi
-				for _port in `ls`; do
+				for _port in *; do
 					if [ ${_port} = "CVS" -o ${_port} = ".svn" -o ${_port} = "Makefile" ]; then
 						continue
 					fi
