@@ -152,7 +152,7 @@ if [ "$1" != '--' ]; then
 fi
 shift
 method="portsnap"
-run_portshaker_command $*
+run_portshaker_command "$@"
 .Ed
 .Pp
 To configure the BSD# ports tree as a
@@ -169,7 +169,7 @@ fi
 shift
 method="svn"
 svn_checkout_path="http://bsd-sharp.googlecode.com/svn/trunk/"
-run_portshaker_command $*
+run_portshaker_command "$@"
 .Ed
 .Pp
 If you want only a subset of ports from the (huge) FreeBSD tree as a
@@ -190,7 +190,7 @@ svn_checkout_subtrees="
   emulators/mame
   net/samba34@319916
 "
-run_portshaker_command $*
+run_portshaker_command "$@"
 .Ed
 .Pp
 To setup a dynamic redports
@@ -210,7 +210,7 @@ extra_info=":${username}"
 shift
 method="svn"
 svn_checkout_path="http://svn.redports.org/${username}"
-run_portshaker_command $*
+run_portshaker_command "$@"
 .Ed
 .Pp
 You can then specify the
@@ -243,7 +243,7 @@ git_clone_uri="git@github.com:freebsd/freebsd-ports.git"
 git_branch="master"
 git_submodules="yes"
 git_submodules_branch="development"
-run_portshaker_command $*
+run_portshaker_command "$@"
 .Sh SEE ALSO
 .Xr csup 1 ,
 .Xr portshaker 8 ,

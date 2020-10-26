@@ -11,4 +11,4 @@ shift
 method="svn"
 svn_checkout_path="svn://creme-brulee.marcuscom.com/ports-stable/trunk"
 
-run_portshaker_command $*
+run_portshaker_command "$@"

@@ -15,4 +15,4 @@ svn_checkout_subtrees="
   net/samba34@319916
 "
 
-run_portshaker_command $*
+run_portshaker_command "$@"

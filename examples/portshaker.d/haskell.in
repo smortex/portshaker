@@ -11,4 +11,4 @@ shift
 method="git"
 git_clone_uri="git://github.com/freebsd-haskell/freebsd-haskell.git"
 
-run_portshaker_command $*
+run_portshaker_command "$@"

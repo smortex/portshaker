@@ -20,4 +20,4 @@ marcuscom_ports_postmerge_to()
     warn "a look to the marcus-merge(8) script."
 }
 
-run_portshaker_command $*
+run_portshaker_command "$@"

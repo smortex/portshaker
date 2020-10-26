@@ -15,4 +15,4 @@ method="portsnap"
 #method="csup"
 #csup_supfile="@@PREFIX@@/etc/portshaker.d/ports-supfile"
 
-run_portshaker_command $*
+run_portshaker_command "$@"

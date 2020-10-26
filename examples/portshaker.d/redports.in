@@ -16,4 +16,4 @@ shift
 method="svn"
 svn_checkout_path="http://svn.redports.org/${username}"
 
-run_portshaker_command $*
+run_portshaker_command "$@"
