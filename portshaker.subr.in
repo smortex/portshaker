@@ -357,9 +357,8 @@ run_portshaker_command()
 
 	_portshaker_arg=$1
 	shift 1
-	_portshaker_extra_args="$*"
 
-	debug "${_portshaker_arg} ${_portshaker_extra_args}"
+	debug "${_portshaker_arg} $*"
 
 	# if ${extra_info} contains `:`, the port infrastructure will produce
 	# warnings when attempting to launch make(1) from the source directory
@@ -389,7 +388,7 @@ run_portshaker_command()
 		# Look for a pre-command and execute it.
 		if type ${name}_pre${_portshaker_arg} 1>/dev/null 2>&1; then
 			info "Executing pre-command '${name}_pre${_portshaker_arg}'."
-			${name}_pre${_portshaker_arg} ${_portshaker_extra_args} || exit 1
+			${name}_pre${_portshaker_arg} "$@" || exit 1
 		fi
 
 		if [ $_use_zfs -eq 1 ]; then
@@ -399,29 +398,16 @@ run_portshaker_command()
 		# Proceed with the command
 		case "${_portshaker_arg}" in
 		clone_to|copy_to)
-			_args=`getopt aP:pt:z: ${_portshaker_extra_args}`
-			if [ $? -ne 0 ]; then
-				portshaker_usage
-			fi
-			set -- ${_args}
 			_target=""
 			_zfs_target_dataset=""
-			for _i; do
+			set -- "$@"
+			while getopts aP:pt:z: _i; do
 				case "${_i}" in
-					-p)
-						_pretend=1
-						shift ;;
-					-P)
-						_poudriere_tree="$2"; shift
-						shift ;;
-					-t)
-						_target="$2"; shift
-						shift ;;
-					-z)
-						_zfs_target_dataset="$2"; shift
-						shift ;;
-					--)
-						shift; break ;;
+					p) _pretend=1 ;;
+					P) _poudriere_tree="$OPTARG" ;;
+					t) _target="$OPTARG" ;;
+					z) _zfs_target_dataset="$OPTARG" ;;
+					?) portshaker_usage ;;
 				esac
 			done
 			if [ -z "${_target}" ]; then
@@ -520,34 +506,19 @@ run_portshaker_command()
 			esac
 			;;
 		merge_to)
-			_args=`getopt ab:m:pt: ${_portshaker_extra_args}`
-			if [ $? -ne 0 ]; then
-				portshaker_usage
-			fi
-			set -- ${_args}
 			_auto_install=0
 			_master=""
 			_target=""
 			_tinderbox_builds=""
-			for _i; do
+			set -- "$@"
+			while getopts ab:m:pt: _i; do
 				case "${_i}" in
-					-a)
-						_auto_install=1
-						shift ;;
-					-b)
-						_tinderbox_builds="${_tinderbox_builds} $2"; shift
-						shift ;;
-					-m)
-						_master="$2"; shift
-						shift ;;
-					-p)
-						_pretend=1
-						shift ;;
-					-t)
-						_target="$2"; shift
-						shift ;;
-					--)
-						shift; break ;;
+					a) _auto_install=1 ;;
+					b) _tinderbox_builds="${_tinderbox_builds} $OPTARG" ;;
+					m) _master="$OPTARG" ;;
+					p) _pretend=1 ;;
+					t) _target="$OPTARG" ;;
+					?) portshaker_usage ;;
 				esac
 			done
 			if [ -z "${_master}" -o -z "${_target}" ]; then
@@ -1150,7 +1121,7 @@ run_portshaker_command()
 		# Look for a post-command and execute it
 		if type ${name}_post${_portshaker_arg} 1>/dev/null 2>&1; then
 			info "Executing post-command \"${name}_post${_portshaker_arg}\"."
-			${name}_post${_portshaker_arg} ${_portshaker_extra_args} || exit 1
+			${name}_post${_portshaker_arg} "$@" || exit 1
 		fi
 
 		return ${_return}

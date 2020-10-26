@@ -11,4 +11,4 @@ shift
 method="svn"
 svn_checkout_path="http://subversion.assembla.com/svn/e17-ports/trunk"
 
-run_portshaker_command $*
+run_portshaker_command "$@"

@@ -23,5 +23,4 @@ method="git"
 git_clone_uri="https://github.com/${username}/${project}"
 git_branch=${git_branch:=master}
 
-run_portshaker_command $*
-
+run_portshaker_command "$@"

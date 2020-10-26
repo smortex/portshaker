@@ -11,4 +11,4 @@ shift
 method="svn"
 svn_checkout_path="https://trillian.chruetertee.ch/svn/ports/trunk/"
 
-run_portshaker_command $*
+run_portshaker_command "$@"
