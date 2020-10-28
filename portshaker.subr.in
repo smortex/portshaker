@@ -400,7 +400,6 @@ run_portshaker_command()
 		clone_to|copy_to)
 			_target=""
 			_zfs_target_dataset=""
-			set -- "$@"
 			while getopts aP:pt:z: _i; do
 				case "${_i}" in
 					p) _pretend=1 ;;
@@ -510,7 +509,6 @@ run_portshaker_command()
 			_master=""
 			_target=""
 			_tinderbox_builds=""
-			set -- "$@"
 			while getopts ab:m:pt: _i; do
 				case "${_i}" in
 					a) _auto_install=1 ;;
