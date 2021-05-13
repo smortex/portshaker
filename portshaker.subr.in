@@ -802,9 +802,9 @@ run_portshaker_command()
 					(cd ${_target}/${_category}
 					debug "Updating ${_category} Makefile."
 					if [ ${_pretend} -eq 0 ]; then
-						head -n 5 Makefile > Makefile.new
+						sed -e '/SUBDIR/,$d' Makefile > Makefile.new
 						find . -mindepth 1 -maxdepth 1 -type d -print | sort | sed -e 's|^./|    SUBDIR += |' >> Makefile.new
-						tail -n 2 Makefile >> Makefile.new
+						sed -e '1,/SUBDIR/d' -e '/SUBDIR/d' Makefile >> Makefile.new
 						mv -f Makefile.new Makefile
 					fi
 					)
