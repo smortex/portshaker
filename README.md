@@ -14,7 +14,7 @@ As `portshaker` can maintain any number of *target* ports tree, it is
 particularly handy if you want to use customized ports trees with tinderbox /
 poudriere.
 
-## Using postshaker
+## Using portshaker
 
 For install instructions, please refer to the INSTALL file.  After installing,
 you will have to configure `portshaker(8)` since it is a toolkit and does nothing
