@@ -784,7 +784,7 @@ run_portshaker_command()
 							fi
 							# Keep a trace of merged ports (for speeding up tinderbox in hooks for example)
 							_new_pkg_version=`${MAKE} -C "${_target}/${_category}/${_port}" -V PKGVERSION 2> /dev/null`
-							if [ -z ${_new_pkg_version} ]; then
+							if [ -z "${_new_pkg_version}" ]; then
 								# Second chance: if it was not possible to get the package name from the tagret
 								# ports tree, try to get it from the source ports tree.  This is usefull if the
 								# current port has a master port in the source ports tree that has not already
