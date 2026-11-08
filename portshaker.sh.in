@@ -208,7 +208,8 @@ if [ "${_do_merge}" -eq 1 ]; then
 				_master="${_source}"
 				_first=0
 			else
-				${config_dir}/portshaker.d/${_source} -- merge_to ${_merge_flags} -m "${_master}" -t ${_target} || exit 1
+				_master=`echo ${_master} | sed 's/ /_/g'`
+    				${config_dir}/portshaker.d/${_source} -- merge_to ${_merge_flags} -m "${_master}" -t ${_target} || exit 1
 			fi
 		done
 
